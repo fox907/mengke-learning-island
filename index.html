@@ -689,6 +689,116 @@ body {
   .char-card { flex-direction: column; align-items: center; }
 }
 
+/* ==================== 家长后台新增 ==================== */
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: var(--font-size);
+}
+.overview-table th, .overview-table td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid #F0F0F5;
+}
+.overview-table th {
+  background: #F8F8FC;
+  font-weight: bold;
+  color: var(--text);
+}
+.overview-table .child-name {
+  font-weight: bold;
+  color: var(--primary);
+  text-align: left;
+  padding-left: 12px;
+}
+.overview-table .done-mark { color: var(--success); font-size: 20px; }
+.overview-table .undone-mark { color: var(--text-light); font-size: 20px; }
+.overview-table .err-count { color: var(--danger); font-weight: bold; }
+.overview-table .no-err { color: var(--success); font-weight: bold; }
+
+.adjust-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.adjust-row input[type="number"] {
+  width: 90px;
+  padding: 8px 10px;
+  border: 2px solid #E0E0F0;
+  border-radius: 8px;
+  font-size: var(--font-size);
+  text-align: center;
+}
+.adjust-row input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 2px solid #E0E0F0;
+  border-radius: 8px;
+  font-size: var(--font-size);
+}
+.adjust-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.adjust-btns button { padding: 8px 18px; border-radius: 20px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.adjust-btns .add-btn { background: var(--success); color: #fff; }
+.adjust-btns .sub-btn { background: var(--danger); color: #fff; }
+.adjust-btns button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.danger-zone {
+  border: 2px dashed var(--danger);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 16px;
+  background: #FFF8F8;
+}
+.danger-zone h4 {
+  color: var(--danger);
+  font-size: var(--font-large);
+  margin-bottom: 10px;
+}
+.danger-zone .danger-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.danger-zone .danger-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 2px solid var(--danger);
+  background: #fff;
+  color: var(--danger);
+  font-size: var(--font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.danger-zone .danger-btn:hover { background: var(--danger); color: #fff; }
+.danger-zone .danger-btn.all { background: var(--danger); color: #fff; }
+.danger-zone .danger-btn.all:hover { background: #E0506A; }
+
+/* ==================== 确认弹窗 ==================== */
+.confirm-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.confirm-modal.show { display: flex; }
+.confirm-modal-content {
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 380px;
+  text-align: center;
+  animation: popIn 0.4s ease;
+}
+.confirm-modal .warning-icon { font-size: 56px; margin-bottom: 12px; }
+.confirm-modal .confirm-msg { font-size: var(--font-large); line-height: 1.6; margin-bottom: 20px; }
+.confirm-modal .confirm-btns { display: flex; gap: 12px; justify-content: center; }
+.confirm-modal .btn-cancel { background: #E0E0F0; color: var(--text); border: none; padding: 10px 24px; border-radius: 20px; font-size: var(--font-size); cursor: pointer; }
+.confirm-modal .btn-confirm { background: var(--danger); color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-size: var(--font-size); cursor: pointer; }
+
 /* ==================== 部署说明(注释在文件末尾) ==================== */
 </style>
 </head>
@@ -887,11 +997,34 @@ body {
 
     <!-- ==================== 家长后台 ==================== -->
     <div class="tab-content" id="tab-parent">
+      <!-- 今日学习概览 -->
+      <div class="card">
+        <div class="card-title">📅 今日学习概览</div>
+        <div id="todayOverview"></div>
+      </div>
+
+      <!-- 积分日志 -->
       <div class="card">
         <div class="card-title">📊 积分日志</div>
         <div class="points-log" id="pointsLog"></div>
       </div>
 
+      <!-- 手动调整积分 -->
+      <div class="card">
+        <div class="card-title">✋ 手动调整积分</div>
+        <p style="font-size:var(--font-size);color:var(--text-light);margin-bottom:10px;">为 <strong id="adjustChildName" style="color:var(--primary);"></strong> 手动加减积分（如奖励额外好行为）</p>
+        <div class="adjust-row">
+          <input type="number" id="adjustPoints" placeholder="积分" value="5">
+          <input type="text" id="adjustReason" placeholder="原因（如：帮妈妈做家务）">
+        </div>
+        <div class="adjust-btns">
+          <button class="add-btn" onclick="App.adjustPoints(1)">➕ 加分</button>
+          <button class="sub-btn" onclick="App.adjustPoints(-1)">➖ 扣分</button>
+        </div>
+        <div class="feedback" id="adjustFeedback"></div>
+      </div>
+
+      <!-- 积分规则设置 -->
       <div class="card">
         <div class="card-title">⚙️ 积分规则设置</div>
         <div id="rulesEditor"></div>
@@ -902,11 +1035,13 @@ body {
         <button class="btn btn-primary" style="margin-top:12px;" onclick="App.saveRules()">保存设置</button>
       </div>
 
+      <!-- 错题集 -->
       <div class="card">
         <div class="card-title">📋 错题集（按孩子分类）</div>
         <div id="errorCollection"></div>
       </div>
 
+      <!-- 导出错题 -->
       <div class="card">
         <div class="card-title">📥 导出错题</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -915,6 +1050,7 @@ body {
         </div>
       </div>
 
+      <!-- 亲子特权设置 -->
       <div class="card">
         <div class="card-title">🎁 亲子特权设置</div>
         <div class="rule-row">
@@ -922,6 +1058,20 @@ body {
           <input type="text" id="privilegeInput" style="width:300px;" placeholder="如：和爸爸妈妈一起看一部电影">
         </div>
         <button class="btn btn-secondary" style="margin-top:12px;" onclick="App.savePrivilege()">保存特权</button>
+      </div>
+
+      <!-- 数据管理（危险区） -->
+      <div class="card">
+        <div class="card-title">🗑️ 数据管理</div>
+        <div class="danger-zone">
+          <h4>⚠️ 危险操作区</h4>
+          <p style="font-size:var(--font-size);color:var(--text-light);">以下操作不可恢复，请谨慎使用！</p>
+          <div class="danger-btns">
+            <button class="danger-btn" onclick="App.clearChildErrors()">🧹 清空当前孩子错题</button>
+            <button class="danger-btn" onclick="App.resetCurrentChild()">🔄 重置当前孩子数据</button>
+            <button class="danger-btn all" onclick="App.resetAllData()">💥 一键清零全部数据</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -937,6 +1087,18 @@ body {
     <div class="mascot-big">🧚‍♀️</div>
     <div class="msg" id="welcomeModalMsg"></div>
     <button class="btn btn-primary" onclick="App.closeWelcome()">开始学习！</button>
+  </div>
+</div>
+
+<!-- ==================== 确认弹窗 ==================== -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-modal-content">
+    <div class="warning-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="App.closeConfirm()">取消</button>
+      <button class="btn-confirm" id="confirmBtn">确认</button>
+    </div>
   </div>
 </div>
 
@@ -1873,6 +2035,13 @@ const App = {
   // ==================== 家长后台 ====================
   renderParentBody() {
     const child = getChild();
+    // 今日学习概览
+    this.renderTodayOverview();
+
+    // 手动调整积分 - 显示当前孩子名
+    const an = document.getElementById('adjustChildName');
+    if (an) an.textContent = child.name;
+
     // 积分日志
     const log = document.getElementById('pointsLog');
     if (child.pointsLog.length === 0) {
@@ -1880,7 +2049,9 @@ const App = {
     } else {
       let html = '<table><tr><th>日期</th><th>时间</th><th>原因</th><th>积分</th></tr>';
       child.pointsLog.slice(0, 50).forEach(l => {
-        html += '<tr><td>' + l.date + '</td><td>' + l.time + '</td><td>' + l.reason + '</td><td style="color:#FFA500;font-weight:bold;">+' + l.points + '</td></tr>';
+        const pts = l.points >= 0 ? '+' + l.points : l.points;
+        const color = l.points >= 0 ? '#FFA500' : '#FF6B8A';
+        html += '<tr><td>' + l.date + '</td><td>' + l.time + '</td><td>' + l.reason + '</td><td style="color:' + color + ';font-weight:bold;">' + pts + '</td></tr>';
       });
       html += '</table>';
       log.innerHTML = html;
@@ -2032,6 +2203,130 @@ const App = {
     } catch(e) {
       el.innerHTML = '<p style="color:#999;">二维码加载失败，请检查网络连接</p>';
     }
+  },
+
+  // ==================== 今日学习概览 ====================
+  renderTodayOverview() {
+    const el = document.getElementById('todayOverview');
+    if (!el) return;
+    let html = '<table class="overview-table"><thead><tr>' +
+      '<th>孩子</th><th>总积分</th><th>连续打卡</th><th>语文</th><th>英语</th><th>思维</th><th>语音日记</th><th>今日错题</th>' +
+      '</tr></thead><tbody>';
+    CONFIG.children.forEach(c => {
+      const ch = appData.children[c.id];
+      const ct = ch.completedToday || {};
+      const totalErr = ch.errorPool.chinese.length + ch.errorPool.english.length + ch.errorPool.math.length;
+      html += '<tr>' +
+        '<td class="child-name">' + ch.name + '</td>' +
+        '<td style="color:#FFA500;font-weight:bold;">' + ch.totalPoints + '</td>' +
+        '<td>' + (ch.streak || 0) + '天</td>' +
+        '<td>' + (ct.chinese ? '<span class="done-mark">✅</span>' : '<span class="undone-mark">⬜</span>') + '</td>' +
+        '<td>' + (ct.english ? '<span class="done-mark">✅</span>' : '<span class="undone-mark">⬜</span>') + '</td>' +
+        '<td>' + (ct.math ? '<span class="done-mark">✅</span>' : '<span class="undone-mark">⬜</span>') + '</td>' +
+        '<td>' + (ct.voiceDiary ? '<span class="done-mark">✅</span>' : '<span class="undone-mark">⬜</span>') + '</td>' +
+        '<td>' + (totalErr > 0 ? '<span class="err-count">' + totalErr + '</span>' : '<span class="no-err">0</span>') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<p style="font-size:14px;color:var(--text-light);margin-top:8px;">💡 点击顶部切换孩子可查看详情，概览展示所有孩子的当日完成情况</p>';
+    el.innerHTML = html;
+  },
+
+  // ==================== 手动调整积分 ====================
+  adjustPoints(dir) {
+    const child = getChild();
+    const pts = parseInt(document.getElementById('adjustPoints').value) || 0;
+    const reason = document.getElementById('adjustReason').value.trim() || (dir > 0 ? '家长手动加分' : '家长手动扣分');
+    if (pts <= 0) {
+      this.showFeedback('adjustFeedback', 'encourage', '🧚‍♀️ 请输入大于0的积分数值！');
+      return;
+    }
+    const actual = dir > 0 ? pts : -pts;
+    child.totalPoints += actual;
+    child.pointsLog.unshift({
+      date: today,
+      time: new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}),
+      reason: '✋ ' + reason,
+      points: actual
+    });
+    this.checkRewards();
+    DB.save(appData);
+    this.updatePointsBadge();
+    this.renderParentBody();
+    this.renderHome();
+    const msg = dir > 0 ? '已为' + child.name + '加上 ' + pts + ' 积分！' : '已扣除' + child.name + ' ' + pts + ' 积分';
+    this.showFeedback('adjustFeedback', 'success', '🧚‍♀️ ' + msg);
+    document.getElementById('adjustPoints').value = '5';
+    document.getElementById('adjustReason').value = '';
+  },
+
+  // ==================== 清空当前孩子错题 ====================
+  clearChildErrors() {
+    const child = getChild();
+    this.showConfirm('🧹', '确定要清空 ' + child.name + ' 的全部错题吗？\n（语文/英语/思维错题池将全部清空）', () => {
+      child.errorPool = { chinese: [], english: [], math: [] };
+      DB.save(appData);
+      this.renderParentBody();
+      this.renderChinese();
+      this.renderEnglish();
+      this.renderMath();
+      this.renderHome();
+    });
+  },
+
+  // ==================== 重置当前孩子数据 ====================
+  resetCurrentChild() {
+    const child = getChild();
+    const childId = appData.currentChild;
+    this.showConfirm('🔄', '确定要重置 ' + child.name + ' 的全部数据吗？\n（积分、打卡、错题、奖励、掌握记录将全部清零，不可恢复！）', () => {
+      const configChild = CONFIG.children.find(c => c.id === childId);
+      appData.children[childId] = {
+        name: configChild.name, grade: configChild.grade, age: configChild.age,
+        totalPoints: 0,
+        streak: 0,
+        lastVisit: null,
+        pointsLog: [],
+        rewards: { sticker: false, theater: false, privilege: false },
+        errorPool: { chinese: [], english: [], math: [] },
+        mastery: { chinese: [], english: [], math: [] },
+        completedToday: { date: null, chinese: false, english: false, math: false, englishWords: [], readAloud: false, voiceDiary: false, readingDone: false },
+        theaterIndex: 0,
+        mathCount: 0,
+        mathIndex: 0,
+        diaries: []
+      };
+      DB.save(appData);
+      this.switchChild(childId);
+      this.renderParentBody();
+    });
+  },
+
+  // ==================== 一键清零全部数据 ====================
+  resetAllData() {
+    this.showConfirm('💥', '⚠️ 警告！这将清零所有孩子的全部数据！\n包括积分、打卡、错题、奖励、日记等所有记录！\n此操作不可恢复！\n\n确定要继续吗？', () => {
+      appData = DB.init();
+      CONFIG.rewardThresholds = appData.rewardThresholds;
+      this.init();
+      this.renderParentBody();
+    });
+  },
+
+  // ==================== 确认弹窗 ====================
+  showConfirm(icon, msg, callback) {
+    document.getElementById('confirmIcon').textContent = icon;
+    document.getElementById('confirmMsg').textContent = msg;
+    document.getElementById('confirmModal').classList.add('show');
+    const btn = document.getElementById('confirmBtn');
+    // 替换为新元素避免重复绑定
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    newBtn.onclick = () => {
+      this.closeConfirm();
+      callback();
+    };
+  },
+  closeConfirm() {
+    document.getElementById('confirmModal').classList.remove('show');
   },
 
   // ==================== 反馈显示 ====================
