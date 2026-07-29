@@ -278,16 +278,10 @@ body {
   color: var(--text);
   position: relative;
   z-index: 2;
-  animation: writeChar 2s ease forwards;
-  background: linear-gradient(90deg, var(--text) 0%, var(--text) 0%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  overflow: hidden;
 }
-@keyframes writeChar {
-  0% { background: linear-gradient(90deg, var(--text) 0%, transparent 0%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  100% { background: linear-gradient(90deg, var(--text) 0%, var(--text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+#strokeWriter {
+  width: 160px;
+  height: 160px;
 }
 .char-info { flex: 1; min-width: 200px; }
 .char-pinyin { font-size: 28px; color: var(--primary); margin-bottom: 8px; }
@@ -923,6 +917,8 @@ body {
 
 <!-- ==================== QRCode 库 ==================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- ==================== HanziWriter 汉字笔顺动画库 ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script>
 // ====================================================================
 // 萌可学习岛 - 主程序
@@ -1313,14 +1309,31 @@ const App = {
     const content = getChildContent();
     const charData = getDaily(content.characters);
 
-    // 生字卡
+    // 生字卡 - 用 HanziWriter 实现真实笔顺动画
     document.getElementById('charCard').innerHTML =
-      '<div class="char-display"><span class="char">' + charData.char + '</span></div>' +
+      '<div class="char-display"><div id="strokeWriter"></div></div>' +
       '<div class="char-info">' +
         '<div class="char-pinyin">' + charData.pinyin + '</div>' +
-        '<div style="font-size:var(--font-large);color:var(--text-light);">笔顺：从上到下，从左到右 ✏️</div>' +
+        '<div style="font-size:var(--font-large);color:var(--text-light);">笔顺：看萌可一笔一划写出来 ✏️</div>' +
         '<div class="char-words">' + charData.words.map(w => '<span class="char-word">' + w + '</span>').join('') + '</div>' +
       '</div>';
+
+    // 创建 HanziWriter 实例，自动播放笔顺动画
+    try {
+      this.strokeWriter = HanziWriter.create('strokeWriter', charData.char, {
+        width: 160,
+        height: 160,
+        padding: 5,
+        strokeAnimationSpeed: 1,
+        delayBetweenStrokes: 300,
+        radicalColor: '#9B7BE0'
+      });
+    } catch(e) {
+      // 某些生僻字可能没有笔顺数据，降级显示纯文字
+      document.getElementById('strokeWriter').innerHTML =
+        '<div style="font-size:100px;font-weight:bold;color:var(--text);display:flex;align-items:center;justify-content:center;height:100%;">' + charData.char + '</div>';
+      this.strokeWriter = null;
+    }
 
     // 阅读理解
     const reading = getDaily(content.readings);
@@ -1335,10 +1348,9 @@ const App = {
     this.renderErrorPool('chinese');
   },
   replayStroke() {
-    const charEl = document.querySelector('.char-display .char');
-    charEl.style.animation = 'none';
-    void charEl.offsetWidth;
-    charEl.style.animation = 'writeChar 2s ease forwards';
+    if (this.strokeWriter) {
+      this.strokeWriter.animateCharacter();
+    }
   },
   markCharLearned() {
     const child = getChild();
