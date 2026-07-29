@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>萌可学习岛 · 李多宝 & 李云兮</title>
+<style>
+/* ==================== 全局变量 ==================== */
+:root {
+  --primary: #6B8AFD;
+  --primary-light: #A5B8FF;
+  --secondary: #FF8FAB;
+  --secondary-light: #FFC2D4;
+  --accent: #4FC3F7;
+  --bg: #F0F4FF;
+  --bg-grad: linear-gradient(135deg, #E8F0FF 0%, #FFF0F5 100%);
+  --card-bg: #FFFFFF;
+  --text: #3A3A5C;
+  --text-light: #8888AA;
+  --success: #6FCF97;
+  --warning: #FFB84D;
+  --danger: #FF6B8A;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 4px 20px rgba(107, 138, 253, 0.12);
+  --shadow-hover: 0 8px 30px rgba(107, 138, 253, 0.2);
+  --font-size: 18px;
+  --font-large: 22px;
+  --font-huge: 28px;
+}
+
+/* ==================== Reset ==================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--font-size);
+  color: var(--text);
+  background: var(--bg-grad);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ==================== 布局 ==================== */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 200px;
+  background: linear-gradient(180deg, #6B8AFD 0%, #9B7FE0 100%);
+  border-radius: 0 30px 30px 0;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: 4px 0 20px rgba(107, 138, 253, 0.2);
+}
+
+.sidebar-logo {
+  font-size: 36px;
+  margin-bottom: 4px;
+  animation: bounce 2s ease-in-out infinite;
+}
+.sidebar-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.nav-item {
+  width: 160px;
+  padding: 14px 12px;
+  margin: 6px 0;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.75);
+  font-size: var(--font-size);
+  transition: all 0.3s;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.nav-item.active {
+  background: #fff;
+  color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.nav-icon { font-size: 24px; }
+
+.main-area {
+  margin-left: 200px;
+  flex: 1;
+  padding: 20px 24px 40px;
+  min-height: 100vh;
+}
+
+/* ==================== 顶部栏 ==================== */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.child-switcher {
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  padding: 6px;
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+}
+.child-btn {
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size);
+  background: transparent;
+  color: var(--text-light);
+  transition: all 0.3s;
+  font-weight: 600;
+}
+.child-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(107,138,253,0.3);
+}
+
+.points-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: var(--font-large);
+  font-weight: bold;
+  box-shadow: 0 3px 12px rgba(255,165,0,0.3);
+}
+
+/* ==================== 卡片 ==================== */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+.card:hover { box-shadow: var(--shadow-hover); }
+.card-title {
+  font-size: var(--font-huge);
+  font-weight: bold;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==================== 首页 ==================== */
+.welcome-bubble {
+  background: linear-gradient(135deg, #E8F4FF, #FFE8F5);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  animation: slideIn 0.5s ease;
+}
+.welcome-bubble .mascot {
+  font-size: 48px;
+  flex-shrink: 0;
+  animation: bounce 2s ease-in-out infinite;
+}
+.welcome-bubble .text {
+  flex: 1;
+  font-size: var(--font-large);
+  line-height: 1.6;
+}
+
+.task-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.task-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+}
+.task-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+.task-card.done { border-color: var(--success); opacity: 0.7; }
+.task-card .icon { font-size: 40px; margin-bottom: 8px; }
+.task-card .label { font-size: var(--font-size); font-weight: bold; }
+.task-card .status { font-size: 14px; margin-top: 6px; color: var(--text-light); }
+.task-card.done .status { color: var(--success); font-weight: bold; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat-box {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.stat-box .num { font-size: 36px; font-weight: bold; }
+.stat-box .label { font-size: 14px; color: var(--text-light); margin-top: 4px; }
+.stat-box.points .num { color: #FFA500; }
+.stat-box.streak .num { color: var(--danger); }
+.stat-box.mastery .num { color: var(--primary); }
+
+.progress-bar {
+  height: 14px;
+  background: #E8E8F0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+/* ==================== 语文岛 ==================== */
+.char-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.char-display {
+  width: 180px;
+  height: 180px;
+  background: #fff;
+  border: 3px solid var(--primary-light);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-image: 
+    linear-gradient(0deg, transparent 49%, #E0E8FF 49%, #E0E8FF 51%, transparent 51%),
+    linear-gradient(90deg, transparent 49%, #E0E8FF 49%, #E0E8FF 51%, transparent 51%);
+}
+.char-display .char {
+  font-size: 100px;
+  font-weight: bold;
+  color: var(--text);
+  position: relative;
+  z-index: 2;
+  animation: writeChar 2s ease forwards;
+  background: linear-gradient(90deg, var(--text) 0%, var(--text) 0%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  overflow: hidden;
+}
+@keyframes writeChar {
+  0% { background: linear-gradient(90deg, var(--text) 0%, transparent 0%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  100% { background: linear-gradient(90deg, var(--text) 0%, var(--text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+}
+.char-info { flex: 1; min-width: 200px; }
+.char-pinyin { font-size: 28px; color: var(--primary); margin-bottom: 8px; }
+.char-words { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.char-word {
+  background: #F0F4FF;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: var(--font-size);
+  color: var(--primary);
+}
+
+.reading-passage {
+  background: #FFF8E8;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  line-height: 2;
+  font-size: var(--font-large);
+  border-left: 4px solid var(--warning);
+}
+.reading-q {
+  background: #F8F4FF;
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin: 10px 0;
+}
+.reading-q .q-label {
+  color: var(--secondary);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.reading-q textarea {
+  width: 100%;
+  border: 2px solid #E0E0F0;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: var(--font-size);
+  margin-top: 6px;
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+.reading-q textarea:focus { border-color: var(--primary); outline: none; }
+
+/* ==================== 英语岛 ==================== */
+.word-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.word-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+.word-card.learned { border-color: var(--success); }
+.word-emoji { font-size: 48px; margin-bottom: 8px; }
+.word-en { font-size: 26px; font-weight: bold; color: var(--primary); }
+.word-cn { font-size: var(--font-size); color: var(--text-light); margin: 4px 0; }
+.word-sentence { font-size: 14px; color: var(--text); margin-top: 8px; line-height: 1.5; }
+.word-card .btn-listen {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.sentence-blank {
+  background: #F0FFF8;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  border-left: 4px solid var(--success);
+}
+.sentence-blank .sentence {
+  font-size: var(--font-large);
+  line-height: 2;
+}
+.blank-input {
+  display: inline-block;
+  width: 120px;
+  border: 2px solid var(--success);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: var(--font-large);
+  text-align: center;
+  margin: 0 6px;
+}
+.blank-input:focus { outline: 2px solid var(--success); }
+.option-btns { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.option-btn {
+  padding: 10px 24px;
+  border-radius: 20px;
+  border: 2px solid #E0E0F0;
+  background: #fff;
+  cursor: pointer;
+  font-size: var(--font-size);
+  transition: all 0.3s;
+}
+.option-btn:hover { border-color: var(--primary); background: #F0F4FF; }
+.option-btn.selected { border-color: var(--primary); background: var(--primary); color: #fff; }
+
+.read-aloud {
+  background: #FFF0F5;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  border-left: 4px solid var(--secondary);
+  text-align: center;
+}
+.read-aloud .target-word {
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--secondary);
+  margin: 10px 0;
+}
+.btn-read-aloud {
+  background: linear-gradient(135deg, var(--secondary), #FF6B9D);
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-size: var(--font-large);
+  cursor: pointer;
+  margin: 10px 0;
+  box-shadow: 0 4px 12px rgba(255,107,157,0.3);
+}
+.stars { font-size: 28px; margin-top: 8px; }
+
+/* ==================== 思维岛 ==================== */
+.math-problem {
+  background: #F8FFFE;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 16px 0;
+  border-left: 4px solid var(--accent);
+}
+.math-question {
+  font-size: var(--font-huge);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.math-input {
+  border: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: var(--font-huge);
+  width: 120px;
+  text-align: center;
+  margin: 0 8px;
+}
+.math-input:focus { outline: 2px solid var(--accent); }
+
+/* ==================== 按钮 ==================== */
+.btn {
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  font-size: var(--font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(107,138,253,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(107,138,253,0.4); }
+.btn-success {
+  background: linear-gradient(135deg, var(--success), #4CAF50);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(111,207,151,0.3);
+}
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary), #FF6B9D);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255,107,157,0.3);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ==================== 反馈 ==================== */
+.feedback {
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  margin: 10px 0;
+  font-size: var(--font-large);
+  display: none;
+  animation: slideIn 0.3s ease;
+}
+.feedback.show { display: block; }
+.feedback.success { background: #E8F8EE; color: var(--success); }
+.feedback.encourage { background: #FFF4E8; color: var(--warning); }
+.feedback .mascot-mini { font-size: 24px; margin-right: 6px; }
+
+/* ==================== 奖励屋 ==================== */
+.reward-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 16px 0;
+}
+.reward-item {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.reward-item.locked { opacity: 0.6; filter: grayscale(0.5); }
+.reward-item.unlocked { border: 2px solid var(--warning); }
+.reward-item .lock { font-size: 32px; }
+.reward-item .reward-icon { font-size: 48px; margin-bottom: 8px; }
+.reward-item .reward-name { font-size: var(--font-size); font-weight: bold; }
+.reward-item .reward-threshold { font-size: 14px; color: var(--text-light); margin-top: 4px; }
+.reward-item .progress-bar { margin-top: 8px; }
+
+.theater-story {
+  background: linear-gradient(135deg, #FFF8E1, #FFE8F5);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 16px 0;
+  line-height: 2;
+  font-size: var(--font-large);
+  display: none;
+}
+.theater-story.show { display: block; animation: slideIn 0.5s ease; }
+
+/* ==================== 错题池 ==================== */
+.error-pool {
+  background: #FFF5F5;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 16px 0;
+  border: 2px dashed var(--danger);
+}
+.error-pool-title {
+  font-size: var(--font-large);
+  font-weight: bold;
+  color: var(--danger);
+  margin-bottom: 10px;
+}
+.error-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.error-chip {
+  background: #fff;
+  border: 2px solid var(--danger);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: var(--font-size);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.error-chip:hover { background: var(--danger); color: #fff; }
+.error-chip .count { font-size: 12px; color: var(--text-light); }
+.error-empty { color: var(--text-light); font-style: italic; padding: 10px; }
+
+/* ==================== 家长后台 ==================== */
+.parent-section {
+  background: #fff;
+  border-radius: var(--radius);
+  margin: 20px 0;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.parent-header {
+  padding: 16px 24px;
+  background: #F5F5FA;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-large);
+  font-weight: bold;
+  color: var(--text);
+}
+.parent-body { padding: 0 24px 24px; display: none; }
+.parent-body.show { display: block; }
+.points-log {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #E0E0F0;
+  border-radius: var(--radius-sm);
+  margin: 12px 0;
+}
+.points-log table { width: 100%; border-collapse: collapse; }
+.points-log th, .points-log td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #F0F0F5;
+  font-size: 14px;
+}
+.points-log th { background: #F8F8FC; font-weight: bold; }
+.rule-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.rule-row label { flex: 1; font-size: var(--font-size); }
+.rule-row input {
+  width: 80px;
+  padding: 6px 10px;
+  border: 2px solid #E0E0F0;
+  border-radius: 8px;
+  font-size: var(--font-size);
+  text-align: center;
+}
+
+/* ==================== 二维码 ==================== */
+.qr-section {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.qr-section canvas, .qr-section img { margin: 0 auto; }
+.qr-hint {
+  font-size: var(--font-size);
+  color: var(--text-light);
+  margin-top: 12px;
+  line-height: 1.6;
+}
+
+/* ==================== 欢迎弹窗 ==================== */
+.welcome-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.welcome-modal.show { display: flex; }
+.welcome-modal-content {
+  background: #fff;
+  border-radius: 30px;
+  padding: 40px;
+  max-width: 420px;
+  text-align: center;
+  animation: popIn 0.5s ease;
+}
+.welcome-modal .mascot-big { font-size: 72px; animation: bounce 1s ease-in-out infinite; }
+.welcome-modal .msg { font-size: var(--font-huge); margin: 16px 0; line-height: 1.6; }
+
+/* ==================== 动画 ==================== */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-80px); }
+}
+.float-text {
+  position: fixed;
+  font-size: 28px;
+  font-weight: bold;
+  pointer-events: none;
+  animation: floatUp 1.5s ease forwards;
+  z-index: 999;
+}
+
+/* ==================== Tab 切换 ==================== */
+.tab-content { display: none; animation: slideIn 0.4s ease; }
+.tab-content.active { display: block; }
+
+/* ==================== 移动端适配 ==================== */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 70px;
+    border-radius: 0 20px 20px 0;
+  }
+  .sidebar-title, .nav-item span:not(.nav-icon) { display: none; }
+  .nav-item { justify-content: center; width: 50px; padding: 14px 8px; }
+  .main-area { margin-left: 70px; padding: 16px; }
+  .task-cards, .word-cards, .reward-grid, .stats-row { grid-template-columns: 1fr; }
+  .char-card { flex-direction: column; align-items: center; }
+}
+
+/* ==================== 部署说明(注释在文件末尾) ==================== */
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- ==================== 左侧导航栏 ==================== -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">🧚‍♀️</div>
+    <div class="sidebar-title">萌可学习岛</div>
+    <button class="nav-item active" data-tab="home">
+      <span class="nav-icon">🏠</span><span>首页</span>
+    </button>
+    <button class="nav-item" data-tab="chinese">
+      <span class="nav-icon">📚</span><span>语文岛</span>
+    </button>
+    <button class="nav-item" data-tab="english">
+      <span class="nav-icon">🌍</span><span>英语岛</span>
+    </button>
+    <button class="nav-item" data-tab="math">
+      <span class="nav-icon">🧮</span><span>思维岛</span>
+    </button>
+    <button class="nav-item" data-tab="reward">
+      <span class="nav-icon">🎁</span><span>奖励屋</span>
+    </button>
+  </nav>
+
+  <!-- ==================== 主区域 ==================== -->
+  <main class="main-area">
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+      <div class="child-switcher" id="childSwitcher"></div>
+      <div class="points-badge" id="pointsBadge">⭐ 0</div>
+    </div>
+
+    <!-- ==================== 首页 ==================== -->
+    <div class="tab-content active" id="tab-home">
+      <div class="welcome-bubble">
+        <div class="mascot">🧚‍♀️</div>
+        <div class="text" id="welcomeText">萌可在这里等你啦！</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📌 今日3件事</div>
+        <div class="task-cards" id="taskCards"></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box points">
+          <div class="num" id="statPoints">0</div>
+          <div class="label">总积分</div>
+          <div class="progress-bar"><div class="progress-fill" id="pointsProgress" style="width:0%"></div></div>
+        </div>
+        <div class="stat-box streak">
+          <div class="num" id="statStreak">0</div>
+          <div class="label">连续打卡（天）</div>
+        </div>
+        <div class="stat-box mastery">
+          <div class="num" id="statMastery">0</div>
+          <div class="label">已掌握（字/词/题）</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💌 萌可悄悄话</div>
+        <p id="encourageText" style="font-size:var(--font-large);line-height:1.8;"></p>
+      </div>
+    </div>
+
+    <!-- ==================== 语文岛 ==================== -->
+    <div class="tab-content" id="tab-chinese">
+      <div class="card">
+        <div class="card-title">✏️ 今日生字</div>
+        <div class="char-card" id="charCard"></div>
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="App.replayStroke()">🔄 再看笔顺</button>
+          <button class="btn btn-success" onclick="App.markCharLearned()">✅ 我会写了！</button>
+        </div>
+        <div class="feedback" id="charFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 今日阅读</div>
+        <div class="reading-passage" id="readingPassage"></div>
+        <div id="readingQuestions"></div>
+        <button class="btn btn-success" style="margin-top:12px;" onclick="App.submitReading()">✅ 读完了，我来说说</button>
+        <div class="feedback" id="readingFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👹 错别字怪兽池</div>
+        <div class="error-pool" id="chineseErrorPool">
+          <div class="error-pool-title">🦕 这些字被怪兽抓走啦，快救它们！</div>
+          <div class="error-chips" id="chineseErrorChips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 英语岛 ==================== -->
+    <div class="tab-content" id="tab-english">
+      <div class="card">
+        <div class="card-title">🔤 每日3个新词</div>
+        <div class="word-cards" id="wordCards"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 句型填空</div>
+        <div class="sentence-blank" id="sentenceBlank"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="App.submitSentence()">提交答案</button>
+        <div class="feedback" id="sentenceFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎤 跟读打卡</div>
+        <div class="read-aloud" id="readAloudArea">
+          <p>大声读出这个单词，萌可给你加油！</p>
+          <div class="target-word" id="readAloudWord">cat</div>
+          <button class="btn-read-aloud" onclick="App.startReadAloud()">🎤 开始跟读</button>
+          <div class="stars" id="readAloudStars"></div>
+        </div>
+        <div class="feedback" id="readAloudFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 复习池</div>
+        <div class="error-pool" id="englishErrorPool">
+          <div class="error-pool-title">🦕 这些词还需要多练习哦</div>
+          <div class="error-chips" id="englishErrorChips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 思维岛 ==================== -->
+    <div class="tab-content" id="tab-math">
+      <div class="card">
+        <div class="card-title">🧠 每日一题</div>
+        <div class="math-problem" id="mathProblem"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="App.submitMath()">提交答案</button>
+        <div class="feedback" id="mathFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🐛 错题重练区</div>
+        <div class="error-pool" id="mathErrorPool">
+          <div class="error-pool-title">🦕 这些题还需要再想想</div>
+          <div class="error-chips" id="mathErrorChips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 奖励屋 ==================== -->
+    <div class="tab-content" id="tab-reward">
+      <div class="card">
+        <div class="card-title">🏆 积分规则</div>
+        <div style="line-height:2;font-size:var(--font-large);" id="rulesDisplay">
+          <p>✅ 完成任务 +5 积分</p>
+          <p>🎤 主动开口跟读 +3 积分</p>
+          <p>💪 自己改对答案 +2 积分</p>
+          <p>🔥 连续第 N 天 +N 积分（上限 7）</p>
+          <p style="color:var(--success);font-weight:bold;">💗 不扣分！只加分！</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎁 奖励宝箱</div>
+        <div class="reward-grid" id="rewardGrid"></div>
+      </div>
+
+      <div class="card" id="theaterCard" style="display:none;">
+        <div class="card-title">🎭 萌可小剧场</div>
+        <div class="theater-story show" id="theaterStory"></div>
+      </div>
+
+      <div class="card" id="privilegeCard" style="display:none;">
+        <div class="card-title">👨‍👩‍👧 亲子特权</div>
+        <div id="privilegeContent" style="font-size:var(--font-large);line-height:1.8;"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 家长后台 ==================== -->
+    <div class="parent-section">
+      <div class="parent-header" onclick="App.toggleParent()">
+        <span>🔐 家长后台</span>
+        <span id="parentArrow">▼</span>
+      </div>
+      <div class="parent-body" id="parentBody">
+        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">📊 积分日志</h3>
+        <div class="points-log" id="pointsLog"></div>
+
+        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">⚙️ 积分规则设置</h3>
+        <div id="rulesEditor"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="App.saveRules()">保存规则</button>
+
+        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">📥 导出本周错题</h3>
+        <button class="btn btn-outline" onclick="App.exportErrors()">导出为 TXT 文件</button>
+
+        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">🎁 亲子特权设置</h3>
+        <div class="rule-row">
+          <label>满100分兑换的特权内容：</label>
+          <input type="text" id="privilegeInput" style="width:300px;" placeholder="如：和爸爸妈妈一起看一部电影">
+        </div>
+        <button class="btn btn-secondary" onclick="App.savePrivilege()">保存特权</button>
+      </div>
+    </div>
+
+    <!-- ==================== 二维码 ==================== -->
+    <div class="qr-section">
+      <div id="qrcode"></div>
+      <p class="qr-hint">📱 家长扫码后在微信里打开，可查看孩子学习进度和积分</p>
+    </div>
+
+    <div style="text-align:center;color:var(--text-light);font-size:14px;padding:20px 0;">
+      💕 萌可学习岛 · 用爱陪伴成长 ·
+    </div>
+  </main>
+</div>
+
+<!-- ==================== 欢迎弹窗 ==================== -->
+<div class="welcome-modal" id="welcomeModal">
+  <div class="welcome-modal-content">
+    <div class="mascot-big">🧚‍♀️</div>
+    <div class="msg" id="welcomeModalMsg"></div>
+    <button class="btn btn-primary" onclick="App.closeWelcome()">开始学习！</button>
+  </div>
+</div>
+
+<!-- ==================== QRCode 库 ==================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ====================================================================
+// 萌可学习岛 - 主程序
+// ====================================================================
+(function() {
+'use strict';
+
+// ==================== 配置区（改这里就能换成你家娃） ====================
+const CONFIG = {
+  deployUrl: 'https://your-deploy-url.com/index.html', // ← 部署后替换为实际地址
+  children: [
+    { id: 'duobao', name: '李多宝', grade: '2年级', age: 7 },
+    { id: 'yunxi',  name: '李云兮', grade: '4年级', age: 9 }
+  ],
+  ipName: '爱心萌可',
+  rewardThresholds: { sticker: 20, theater: 50, privilege: 100 },
+  defaultRules: {
+    taskComplete: 5,
+    speakUp: 3,
+    selfCorrect: 2,
+    streakMax: 7
+  }
+};
+
+// ==================== 学习内容 ====================
+const CONTENT = {
+  duobao: {
+    characters: [
+      { char:'人', pinyin:'rén', words:['人们','人类','个人'] },
+      { char:'口', pinyin:'kǒu', words:['口水','开口','入口'] },
+      { char:'手', pinyin:'shǒu', words:['手心','双手','手机'] },
+      { char:'日', pinyin:'rì', words:['日出','生日','今日'] },
+      { char:'月', pinyin:'yuè', words:['月亮','月光','日月'] },
+      { char:'水', pinyin:'shuǐ', words:['水果','水流','山水'] },
+      { char:'火', pinyin:'huǒ', words:['火车','火苗','生火'] },
+      { char:'山', pinyin:'shān', words:['大山','山水','高山'] },
+      { char:'石', pinyin:'shí', words:['石头','石桥','玉石'] },
+      { char:'田', pinyin:'tián', words:['田地','稻田','种田'] }
+    ],
+    readings: [
+      { title:'春天来了', text:'春天来了，小草从泥土里钻出来，绿绿的。桃花开了，粉粉的。小燕子从南方飞回来了，在天上快乐地唱歌。小朋友们在草地上放风筝，跑啊跑，笑啊笑。',
+        questions:['小草是什么颜色的？你还在哪里见过这样颜色的植物呢？','小燕子从哪里飞回来的？你觉得它为什么要飞回来？','小朋友们在做什么？你喜欢在春天做什么？'] },
+      { title:'小蚂蚁搬家', text:'天要下雨了，小蚂蚁忙着搬家。它们排着长长的队伍，有的扛着食物，有的搬着宝宝。大家齐心协力，不怕困难。终于，在雨来之前，它们搬到了新家。',
+        questions:['小蚂蚁为什么要搬家？你怎么知道的？','它们搬了哪些东西？如果你是蚂蚁，你会搬什么？','"齐心协力"是什么意思？你和小伙伴做过什么事是齐心协力的？'] },
+      { title:'月亮船', text:'天黑了，月亮出来了，像一只小船挂在天上。星星一闪一闪的，像在跟月亮说话。小兔子看着月亮，心想：如果我坐在月亮船上，就能飞到天上去啦！',
+        questions:['月亮像什么？你还觉得月亮像什么？','星星在做什么？你觉得星星想跟月亮说什么？','小兔子的心愿是什么？你有什么心愿呢？'] }
+    ],
+    englishWords: [
+      [{en:'cat',cn:'猫',emoji:'🐱',sentence:'I have a cat.'},{en:'dog',cn:'狗',emoji:'🐶',sentence:'The dog is big.'},{en:'sun',cn:'太阳',emoji:'☀️',sentence:'The sun is hot.'}],
+      [{en:'apple',cn:'苹果',emoji:'🍎',sentence:'I like apples.'},{en:'fish',cn:'鱼',emoji:'🐟',sentence:'The fish swims.'},{en:'book',cn:'书',emoji:'📖',sentence:'Read a book.'}],
+      [{en:'star',cn:'星星',emoji:'⭐',sentence:'Look at the star.'},{en:'tree',cn:'树',emoji:'🌳',sentence:'A tall tree.'},{en:'milk',cn:'牛奶',emoji:'🥛',sentence:'Drink milk.'}]
+    ],
+    sentences: [
+      { text:'I ___ a cat.', answer:'have', options:['have','has','am'] },
+      { text:'The dog ___ big.', answer:'is', options:['am','is','are'] },
+      { text:'Look ___ the star.', answer:'at', options:['at','in','on'] }
+    ],
+    math: [
+      { type:'fill', q:'15 + 8 = ?', a:'23', hint:'可以先算5+8=13，再算10+13' },
+      { type:'fill', q:'找规律：2, 4, 6, 8, ?', a:'10', hint:'每次多2' },
+      { type:'choice', q:'小明有10个苹果，吃了3个，还剩几个？', options:['6','7','8'], a:'7' },
+      { type:'fill', q:'20 - 7 = ?', a:'13', hint:'先算10-7=3，再算10+3' },
+      { type:'choice', q:'哪个数比15大比20小？', options:['12','17','21'], a:'17' },
+      { type:'fill', q:'找规律：5, 10, 15, 20, ?', a:'25', hint:'每次多5' },
+      { type:'choice', q:'一双手有几根手指？', options:['5','10','20'], a:'10' }
+    ]
+  },
+  yunxi: {
+    characters: [
+      { char:'智', pinyin:'zhì', words:['智慧','智力','机智'] },
+      { char:'慧', pinyin:'huì', words:['智慧','聪慧','慧眼'] },
+      { char:'勇', pinyin:'yǒng', words:['勇敢','勇气','英勇'] },
+      { char:'敢', pinyin:'gǎn', words:['勇敢','敢于','果敢'] },
+      { char:'梦', pinyin:'mèng', words:['做梦','梦想','梦境'] },
+      { char:'想', pinyin:'xiǎng', words:['想法','思想','想象'] },
+      { char:'创', pinyin:'chuàng', words:['创新','创造','创办'] },
+      { char:'造', pinyin:'zào', words:['造句','制造','创造'] },
+      { char:'奇', pinyin:'qí', words:['奇妙','好奇','神奇'] },
+      { char:'妙', pinyin:'miào', words:['妙计','美妙','巧妙'] }
+    ],
+    readings: [
+      { title:'坚持的力量', text:'小明学骑自行车，一开始总是摔倒。膝盖磕破了，手掌也擦伤了。他很想放弃。但是爸爸告诉他："每一次摔倒，都是在学会平衡。"小明咬咬牙，又爬上了车。第一天，他摔了十次。第二天，摔了五次。第三天，他终于骑了整整一圈没有倒下来！小明开心极了，他明白了：坚持，就是离成功越来越近。',
+        questions:['小明想放弃的时候，爸爸说了什么？你怎么理解这句话？','小明每天摔倒的次数在怎么变化？这说明了什么？','你有没有类似小明的经历？当时你是怎么做的？'] },
+      { title:'一棵树的秘密', text:'校园里有一棵老槐树，已经一百多岁了。春天，它开出满树的白花，香气飘满校园。夏天，同学们在树下乘凉、读书。秋天，树叶变黄了，像蝴蝶一样飘落。冬天，它光着枝丫，却依然挺立在寒风中。老槐树像一个沉默的朋友，看着一届又一届学生长大。',
+        questions:['老槐树有多少岁了？你觉得它见过什么事情？','四季中老槐树分别是什么样子？你最喜欢哪个季节的它？','为什么说老槐树"像沉默的朋友"？你有这样的朋友吗？'] },
+      { title:'星星的对话', text:'夜空中，两颗星星在聊天。小星星说："我太小了，发出的光很微弱，没人会注意到我。"大星星说："但如果没有你，天空就少了一点光。每一个小小的光，加在一起，才成了璀璨的银河。"小星星听了，不再难过，努力发出自己最亮的光。',
+        questions:['小星星为什么难过？你有没有过类似的感受？','大星星说了什么？你觉得它说得对吗？','这个故事想告诉我们什么道理？'] }
+    ],
+    englishWords: [
+      [{en:'adventure',cn:'冒险',emoji:'🗺️',sentence:'We had a great adventure.'},{en:'discover',cn:'发现',emoji:'🔍',sentence:'I discover something new.'},{en:'journey',cn:'旅程',emoji:'🚂',sentence:'The journey was long.'}],
+      [{en:'courage',cn:'勇气',emoji:'💪',sentence:'She has great courage.'},{en:'imagine',cn:'想象',emoji:'💭',sentence:'I can imagine it.'},{en:'create',cn:'创造',emoji:'🎨',sentence:'Let us create art.'}],
+      [{en:'explore',cn:'探索',emoji:'🔭',sentence:'We explore the forest.'},{en:'achieve',cn:'实现',emoji:'🏆',sentence:'You can achieve your dream.'},{en:'wonder',cn:'惊奇',emoji:'✨',sentence:'What a wonderful day!'}]
+    ],
+    sentences: [
+      { text:'She ___ to school every day.', answer:'goes', options:['go','goes','going'] },
+      { text:'We ___ a great adventure.', answer:'had', options:['have','had','has'] },
+      { text:'I can ___ it in my mind.', answer:'imagine', options:['imagine','imagines','imagining'] }
+    ],
+    math: [
+      { type:'fill', q:'24 × 6 = ?', a:'144', hint:'先算20×6=120，再算4×6=24' },
+      { type:'fill', q:'找规律：1, 4, 9, 16, ?', a:'25', hint:'1=1², 4=2², 9=3²...' },
+      { type:'choice', q:'一列火车每小时行驶120公里，3小时能行驶多少公里？', options:['240','360','480'], a:'360' },
+      { type:'fill', q:'144 ÷ 12 = ?', a:'12', hint:'想想12×12=?' },
+      { type:'choice', q:'一个长方形长8cm宽5cm，面积是多少？', options:['13','40','26'], a:'40' },
+      { type:'fill', q:'找规律：2, 6, 18, 54, ?', a:'162', hint:'每个数是前一个的3倍' },
+      { type:'choice', q:'小明的年龄是小红的2倍，小明10岁，小红几岁？', options:['5','20','8'], a:'5' }
+    ]
+  }
+};
+
+// ==================== 萌可小剧场故事库 ====================
+const THEATER_STORIES = [
+  '在爱心王国里，萌可遇到了一朵快要枯萎的小花。别的花都笑话它："你又小又丑，还不如别开了！"小花难过地低下了头。但萌可每天给它浇水、唱歌、说鼓励的话。一个月后，小花开了——它竟然是传说中的七彩花！别的花都惊呆了。萌可笑着说："每一朵花都有自己的花期，只要不放弃，总会绽放的。"小花看着萌可，开心地笑了。🌟🌸',
+  '萌可在森林里迷路了。天越来越黑，它有点害怕。这时，一只小萤火虫飞过来说："别怕，我给你照亮！"一只小兔子跑来说："别怕，我带你走！"一只小松鼠跳下来说："别怕，我知道路！"萌可感动极了。有了朋友们的帮助，它很快就走出了森林。萌可明白了：遇到困难不要怕，勇敢说出来，总有人愿意帮你。🦊🐰🧚‍♀️',
+  '萌可参加飞行比赛，可是它的翅膀比别人的短。别的精灵飞得又快又高，萌可怎么飞都飞不快。它想放弃了。老师走过来说："萌可，你知道吗？翅膀短的人飞得更稳。"萌可不信。但在比赛中途起了大风，那些飞得快的精灵被吹得东倒西歪，而萌可凭借稳稳的飞行，反而第一个到达了终点！原来，每个人都有自己的优势，找到它，你就是最棒的！🧚‍♀️🏆✨'
+];
+
+// ==================== 鼓励语库 ====================
+const ENCOURAGES = [
+  '多宝/云兮，你今天又来啦！萌可超开心！每天进步一点点，你就是最棒的！',
+  '今天的你比昨天更厉害啦！萌可一直在你身边加油哦！',
+  '学习就像冒险，每闯一关都变强！萌可陪你一起闯！',
+  '别怕出错，出错说明你在学新东西！萌可觉得再试一次会更棒！',
+  '坚持就是超能力！你已经连续打卡啦，萌可给你点赞！'
+];
+
+// ==================== 数据管理 ====================
+const DB = {
+  key: 'mengke_learning_v1',
+  load() {
+    try {
+      const raw = localStorage.getItem(this.key);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return this.init();
+  },
+  save(data) {
+    localStorage.setItem(this.key, JSON.stringify(data));
+  },
+  init() {
+    const data = {
+      currentChild: 'duobao',
+      rules: Object.assign({}, CONFIG.defaultRules),
+      privilegeText: '和爸爸妈妈一起看一部电影',
+      children: {}
+    };
+    CONFIG.children.forEach(c => {
+      data.children[c.id] = {
+        name: c.name, grade: c.grade, age: c.age,
+        totalPoints: 0,
+        streak: 0,
+        lastVisit: null,
+        pointsLog: [],
+        rewards: { sticker: false, theater: false, privilege: false },
+        errorPool: { chinese: [], english: [], math: [] },
+        mastery: { chinese: [], english: [], math: [] },
+        completedToday: { date: null, chinese: false, english: false, math: false, englishWords: [], readAloud: false },
+        theaterIndex: 0
+      };
+    });
+    this.save(data);
+    return data;
+  }
+};
+
+let appData = DB.load();
+let today = new Date().toISOString().slice(0, 10);
+let selectedSentenceOption = null;
+
+// ==================== 工具函数 ====================
+function getDayIndex() {
+  return Math.floor(Date.now() / 86400000);
+}
+function getChild() {
+  return appData.children[appData.currentChild];
+}
+function getChildContent() {
+  return CONTENT[appData.currentChild];
+}
+function getDaily(arr) {
+  const idx = getDayIndex() % arr.length;
+  return arr[idx];
+}
+function getDailyForChild(arr, childId) {
+  const offset = childId === 'yunxi' ? 3 : 0;
+  return arr[(getDayIndex() + offset) % arr.length];
+}
+
+// ==================== 主应用 ====================
+const App = {
+  init() {
+    this.renderChildSwitcher();
+    this.switchChild(appData.currentChild);
+    this.initNav();
+    this.generateQRCode();
+    this.checkFirstVisit();
+  },
+
+  // ---- 娃切换 ----
+  renderChildSwitcher() {
+    const el = document.getElementById('childSwitcher');
+    el.innerHTML = '';
+    CONFIG.children.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'child-btn' + (c.id === appData.currentChild ? ' active' : '');
+      btn.textContent = c.name + ' · ' + c.grade;
+      btn.onclick = () => this.switchChild(c.id);
+      el.appendChild(btn);
+    });
+  },
+  switchChild(id) {
+    appData.currentChild = id;
+    DB.save(appData);
+    this.renderChildSwitcher();
+    this.checkStreak();
+    this.renderHome();
+    this.renderChinese();
+    this.renderEnglish();
+    this.renderMath();
+    this.renderReward();
+    this.renderParentBody();
+  },
+
+  // ---- 导航 ----
+  initNav() {
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      };
+    });
+  },
+
+  // ---- 连续打卡 ----
+  checkStreak() {
+    const child = getChild();
+    if (child.lastVisit === today) return; // 今天已记录
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    if (child.lastVisit === yesterday) {
+      child.streak++;
+    } else {
+      child.streak = 1;
+    }
+    // 连续打卡加分
+    if (child.streak > 1) {
+      const bonus = Math.min(child.streak, appData.rules.streakMax);
+      this.addPoints(bonus, '连续第' + child.streak + '天打卡 +' + bonus);
+    }
+    child.lastVisit = today;
+    // 重置今日完成状态
+    child.completedToday = { date: today, chinese: false, english: false, math: false, englishWords: [], readAloud: false };
+    DB.save(appData);
+  },
+
+  // ---- 首次访问弹窗 ----
+  checkFirstVisit() {
+    const visitKey = 'mengke_visited_' + today;
+    if (!localStorage.getItem(visitKey)) {
+      localStorage.setItem(visitKey, '1');
+      this.showWelcome();
+    }
+  },
+  showWelcome() {
+    const child = getChild();
+    const msgs = [
+      '嗨！' + child.name + '！萌可想你啦！今天一起闯关吧！',
+      '欢迎回来！' + child.name + '！萌可准备好啦，你呢？',
+      '耶！' + child.name + '来啦！萌可今天准备了好多好玩的！'
+    ];
+    document.getElementById('welcomeModalMsg').textContent = msgs[getDayIndex() % msgs.length];
+    document.getElementById('welcomeModal').classList.add('show');
+  },
+  closeWelcome() {
+    document.getElementById('welcomeModal').classList.remove('show');
+  },
+
+  // ---- 积分系统 ----
+  addPoints(n, reason) {
+    const child = getChild();
+    child.totalPoints += n;
+    child.pointsLog.unshift({ date: today, time: new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}), reason: reason, points: n });
+    // 检查奖励解锁
+    this.checkRewards();
+    DB.save(appData);
+    this.updatePointsBadge();
+    this.floatText('+' + n + ' ⭐');
+  },
+  updatePointsBadge() {
+    const child = getChild();
+    document.getElementById('pointsBadge').textContent = '⭐ ' + child.totalPoints;
+  },
+  floatText(txt) {
+    const el = document.createElement('div');
+    el.className = 'float-text';
+    el.textContent = txt;
+    el.style.left = '50%';
+    el.style.top = '50%';
+    el.style.color = '#FFA500';
+    el.style.transform = 'translateX(-50%)';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  },
+
+  // ---- 奖励 ----
+  checkRewards() {
+    const child = getChild();
+    const t = CONFIG.rewardThresholds;
+    if (!child.rewards.sticker && child.totalPoints >= t.sticker) {
+      child.rewards.sticker = true;
+      this.floatText('🎉 解锁萌可贴纸！');
+    }
+    if (!child.rewards.theater && child.totalPoints >= t.theater) {
+      child.rewards.theater = true;
+      this.floatText('🎉 解锁萌可小剧场！');
+    }
+    if (!child.rewards.privilege && child.totalPoints >= t.privilege) {
+      child.rewards.privilege = true;
+      this.floatText('🎉 解锁亲子特权！');
+    }
+  },
+
+  // ==================== 首页 ====================
+  renderHome() {
+    const child = getChild();
+    const content = getChildContent();
+    this.updatePointsBadge();
+    this.checkStreak();
+
+    // 今日任务卡片
+    const tasks = [
+      { key:'chinese', icon:'📚', label:'语文：学1个生字 + 读1篇短文', done: child.completedToday.chinese },
+      { key:'english', icon:'🌍', label:'英语：学3个单词 + 跟读', done: child.completedToday.english },
+      { key:'math', icon:'🧮', label:'思维：做1道逻辑题', done: child.completedToday.math }
+    ];
+    const tc = document.getElementById('taskCards');
+    tc.innerHTML = '';
+    tasks.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'task-card' + (t.done ? ' done' : '');
+      div.innerHTML = '<div class="icon">' + t.icon + '</div><div class="label">' + t.label + '</div><div class="status">' + (t.done ? '✅ 已完成' : '点击前往') + '</div>';
+      div.onclick = () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+        document.querySelector('[data-tab="'+t.key+'"]').classList.add('active');
+        document.getElementById('tab-'+t.key).classList.add('active');
+      };
+      tc.appendChild(div);
+    });
+
+    // 统计
+    document.getElementById('statPoints').textContent = child.totalPoints;
+    document.getElementById('statStreak').textContent = child.streak;
+    const masteryCount = child.mastery.chinese.length + child.mastery.english.length + child.mastery.math.length;
+    document.getElementById('statMastery').textContent = masteryCount;
+
+    // 进度条（到下一个奖励的进度）
+    const nextThreshold = this.getNextThreshold();
+    const prevThreshold = this.getPrevThreshold();
+    const pct = nextThreshold ? Math.min(100, ((child.totalPoints - prevThreshold) / (nextThreshold - prevThreshold)) * 100) : 100;
+    document.getElementById('pointsProgress').style.width = pct + '%';
+
+    // 鼓励语
+    document.getElementById('encourageText').textContent = ENCOURAGES[getDayIndex() % ENCOURAGES.length];
+    document.getElementById('welcomeText').textContent = child.name + '，萌可想你啦！今天也要一起闯关哦！💪';
+  },
+  getNextThreshold() {
+    const child = getChild();
+    const t = CONFIG.rewardThresholds;
+    if (!child.rewards.sticker) return t.sticker;
+    if (!child.rewards.theater) return t.theater;
+    if (!child.rewards.privilege) return t.privilege;
+    return null;
+  },
+  getPrevThreshold() {
+    const child = getChild();
+    const t = CONFIG.rewardThresholds;
+    if (child.totalPoints < t.sticker) return 0;
+    if (child.totalPoints < t.theater) return t.sticker;
+    if (child.totalPoints < t.privilege) return t.theater;
+    return t.privilege;
+  },
+
+  // ==================== 语文岛 ====================
+  renderChinese() {
+    const child = getChild();
+    const content = getChildContent();
+    const charData = getDaily(content.characters);
+
+    // 生字卡
+    document.getElementById('charCard').innerHTML =
+      '<div class="char-display"><span class="char">' + charData.char + '</span></div>' +
+      '<div class="char-info">' +
+        '<div class="char-pinyin">' + charData.pinyin + '</div>' +
+        '<div style="font-size:var(--font-large);color:var(--text-light);">笔顺：从上到下，从左到右 ✏️</div>' +
+        '<div class="char-words">' + charData.words.map(w => '<span class="char-word">' + w + '</span>').join('') + '</div>' +
+      '</div>';
+
+    // 阅读理解
+    const reading = getDaily(content.readings);
+    document.getElementById('readingPassage').innerHTML = '<strong>' + reading.title + '</strong><br>' + reading.text;
+    const rq = document.getElementById('readingQuestions');
+    rq.innerHTML = '';
+    reading.questions.forEach((q, i) => {
+      rq.innerHTML += '<div class="reading-q"><div class="q-label">🤔 第' + (i+1) + '题</div><div>' + q + '</div><textarea placeholder="说说你的想法～"></textarea></div>';
+    });
+
+    // 错字池
+    this.renderErrorPool('chinese');
+  },
+  replayStroke() {
+    const charEl = document.querySelector('.char-display .char');
+    charEl.style.animation = 'none';
+    void charEl.offsetWidth;
+    charEl.style.animation = 'writeChar 2s ease forwards';
+  },
+  markCharLearned() {
+    const child = getChild();
+    const content = getChildContent();
+    const charData = getDaily(content.characters);
+    if (child.mastery.chinese.indexOf(charData.char) === -1) {
+      child.mastery.chinese.push(charData.char);
+    }
+    // 如果在错字池里，连续对2次移出
+    this.handleCorrect('chinese', charData.char);
+    this.addPoints(appData.rules.taskComplete, '语文：学会生字"' + charData.char + '"');
+    this.showFeedback('charFeedback', 'success', '🧚‍♀️ 太棒了！"' + charData.char + '"已经被你收服啦！');
+    DB.save(appData);
+    this.renderHome();
+  },
+  submitReading() {
+    const child = getChild();
+    const content = getChildContent();
+    const reading = getDaily(content.readings);
+    const textareas = document.querySelectorAll('#readingQuestions textarea');
+    let allFilled = true;
+    textareas.forEach(t => { if (!t.value.trim()) allFilled = false; });
+    if (allFilled) {
+      if (!child.completedToday.chinese) {
+        child.completedToday.chinese = true;
+        this.addPoints(appData.rules.taskComplete, '语文：完成阅读理解');
+      }
+      this.showFeedback('readingFeedback', 'success', '🧚‍♀️ 你的想法好有趣！萌可想到了更多的故事呢！');
+      DB.save(appData);
+      this.renderHome();
+    } else {
+      this.showFeedback('readingFeedback', 'encourage', '🧚‍♀️ 萌可觉得再想想会更棒！每个问题都说说看～');
+    }
+  },
+
+  // ==================== 英语岛 ====================
+  renderEnglish() {
+    const child = getChild();
+    const content = getChildContent();
+    const words = getDaily(content.englishWords);
+
+    // 单词卡
+    const wc = document.getElementById('wordCards');
+    wc.innerHTML = '';
+    words.forEach((w, i) => {
+      const learned = child.completedToday.englishWords.indexOf(w.en) !== -1;
+      const div = document.createElement('div');
+      div.className = 'word-card' + (learned ? ' learned' : '');
+      div.innerHTML =
+        '<div class="word-emoji">' + w.emoji + '</div>' +
+        '<div class="word-en">' + w.en + '</div>' +
+        '<div class="word-cn">' + w.cn + '</div>' +
+        '<div class="word-sentence">' + w.sentence + '</div>' +
+        '<button class="btn-listen" onclick="App.speak(\'' + w.en + '\')">🔊 听发音</button>' +
+        '<button class="btn btn-success" style="margin-top:8px;width:100%;font-size:14px;padding:8px;" onclick="App.markWordLearned(' + i + ')">' + (learned ? '✅ 已学会' : '学会了！') + '</button>';
+      wc.appendChild(div);
+    });
+
+    // 句型填空
+    const sentence = getDaily(content.sentences);
+    const parts = sentence.text.split('___');
+    const sb = document.getElementById('sentenceBlank');
+    sb.innerHTML = '<div class="sentence">' + parts[0] + '<input class="blank-input" id="blankInput" placeholder="?" />' + parts[1] + '</div>';
+    // 选项
+    selectedSentenceOption = null;
+    const ob = document.createElement('div');
+    ob.className = 'option-btns';
+    sentence.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => {
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedSentenceOption = opt;
+        document.getElementById('blankInput').value = opt;
+      };
+      ob.appendChild(btn);
+    });
+    sb.appendChild(ob);
+
+    // 跟读词
+    document.getElementById('readAloudWord').textContent = words[0].en;
+    document.getElementById('readAloudStars').textContent = '';
+    document.getElementById('readAloudFeedback').className = 'feedback';
+
+    // 复习池
+    this.renderErrorPool('english');
+  },
+  speak(word) {
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(word);
+      u.lang = 'en-US';
+      u.rate = 0.8;
+      speechSynthesis.speak(u);
+    }
+  },
+  markWordLearned(idx) {
+    const child = getChild();
+    const content = getChildContent();
+    const words = getDaily(content.englishWords);
+    const w = words[idx];
+    if (child.completedToday.englishWords.indexOf(w.en) === -1) {
+      child.completedToday.englishWords.push(w.en);
+      child.mastery.english.push(w.en);
+      this.handleCorrect('english', w.en);
+      this.addPoints(appData.rules.taskComplete, '英语：学会单词 "' + w.en + '"');
+    }
+    DB.save(appData);
+    this.renderEnglish();
+    this.renderHome();
+  },
+  submitSentence() {
+    const child = getChild();
+    const content = getChildContent();
+    const sentence = getDaily(content.sentences);
+    const userAns = document.getElementById('blankInput').value.trim().toLowerCase();
+    if (userAns === sentence.answer.toLowerCase()) {
+      this.showFeedback('sentenceFeedback', 'success', '🧚‍♀️ 完美！你真的好厉害！');
+      this.handleCorrect('english', 'sentence_' + sentence.text);
+      if (!child.completedToday.english) {
+        // 只加一次分
+      }
+      this.addPoints(appData.rules.selfCorrect, '英语：句型填空正确');
+      DB.save(appData);
+    } else {
+      this.showFeedback('sentenceFeedback', 'encourage', '🧚‍♀️ 萌可觉得再试一次会更棒！再看看这个句子～');
+      this.addToErrorPool('english', 'sentence_' + sentence.text);
+      DB.save(appData);
+    }
+  },
+  startReadAloud() {
+    const content = getChildContent();
+    const words = getDaily(content.englishWords);
+    const target = words[0].en.toLowerCase();
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      document.getElementById('readAloudStars').textContent = '⚠️ 当前浏览器不支持语音识别，请用 Chrome 或 Edge 试试';
+      return;
+    }
+    const recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 3;
+    document.getElementById('readAloudStars').textContent = '🎤 正在听...';
+    recognition.onresult = (e) => {
+      let bestMatch = '';
+      let found = false;
+      for (let i = 0; i < e.results[0].length; i++) {
+        const transcript = e.results[0][i].transcript.trim().toLowerCase();
+        if (transcript.indexOf(target) !== -1 || target.indexOf(transcript) !== -1) {
+          found = true;
+          bestMatch = transcript;
+          break;
+        }
+        if (!bestMatch) bestMatch = transcript;
+      }
+      const child = getChild();
+      if (found) {
+        document.getElementById('readAloudStars').textContent = '⭐⭐⭐ 好棒！萌可听到你啦！';
+        this.showFeedback('readAloudFeedback', 'success', '🧚‍♀️ 哇！发音好清楚！萌可给你三颗星！');
+        if (!child.completedToday.readAloud) {
+          child.completedToday.readAloud = true;
+          this.addPoints(appData.rules.speakUp, '英语：主动开口跟读');
+          if (child.completedToday.englishWords.length >= 3) {
+            child.completedToday.english = true;
+          }
+        }
+        DB.save(appData);
+        this.renderHome();
+      } else {
+        document.getElementById('readAloudStars').textContent = '⭐ 再试一次吧！';
+        this.showFeedback('readAloudFeedback', 'encourage', '🧚‍♀️ 萌可觉得再大声说一次会更棒！听一遍再试试～');
+      }
+    };
+    recognition.onerror = () => {
+      document.getElementById('readAloudStars').textContent = '🧚‍♀️ 没听清呢，再试一次吧！';
+    };
+    recognition.start();
+  },
+
+  // ==================== 思维岛 ====================
+  renderMath() {
+    const child = getChild();
+    const content = getChildContent();
+    const problem = getDaily(content.math);
+
+    const el = document.getElementById('mathProblem');
+    if (problem.type === 'fill') {
+      el.innerHTML = '<div class="math-question">' + problem.q.replace('?', '<input class="math-input" id="mathInput" placeholder="?" />') + '</div>';
+    } else {
+      let html = '<div class="math-question">' + problem.q + '</div><div class="option-btns">';
+      problem.options.forEach(opt => {
+        html += '<button class="option-btn" onclick="App.selectMathOption(this, \'' + opt + '\')">' + opt + '</button>';
+      });
+      html += '</div>';
+      el.innerHTML = html;
+    }
+    el.dataset.hint = problem.hint || '';
+    el.dataset.answer = problem.a;
+    document.getElementById('mathFeedback').className = 'feedback';
+
+    this.renderErrorPool('math');
+  },
+  selectMathOption(btn, val) {
+    document.querySelectorAll('#mathProblem .option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('mathProblem').dataset.userAnswer = val;
+  },
+  submitMath() {
+    const child = getChild();
+    const content = getChildContent();
+    const problem = getDaily(content.math);
+    let userAns;
+    if (problem.type === 'fill') {
+      userAns = document.getElementById('mathInput').value.trim();
+    } else {
+      userAns = document.getElementById('mathProblem').dataset.userAnswer || '';
+    }
+    if (userAns === problem.a) {
+      this.showFeedback('mathFeedback', 'success', '🧚‍♀️ 答对啦！你真是小天才！');
+      this.handleCorrect('math', problem.q);
+      if (!child.completedToday.math) {
+        child.completedToday.math = true;
+        this.addPoints(appData.rules.taskComplete, '思维：完成逻辑题');
+      } else {
+        this.addPoints(appData.rules.selfCorrect, '思维：额外答题正确');
+      }
+      child.mastery.math.push(problem.q.slice(0, 10));
+      DB.save(appData);
+      this.renderHome();
+    } else {
+      const hint = problem.hint ? '<br>💡 小提示：' + problem.hint : '';
+      this.showFeedback('mathFeedback', 'encourage', '🧚‍♀️ 萌可觉得再试一次会更棒！' + hint);
+      this.addToErrorPool('math', problem.q);
+      DB.save(appData);
+    }
+  },
+
+  // ==================== 错题池管理 ====================
+  addToErrorPool(type, item) {
+    const child = getChild();
+    const pool = child.errorPool[type];
+    const existing = pool.find(p => p.item === item);
+    if (existing) {
+      // 已在池中，不重复添加
+    } else {
+      pool.push({ item: item, correctCount: 0, date: today });
+    }
+    DB.save(appData);
+  },
+  handleCorrect(type, item) {
+    const child = getChild();
+    const pool = child.errorPool[type];
+    const idx = pool.findIndex(p => p.item === item);
+    if (idx !== -1) {
+      pool[idx].correctCount++;
+      if (pool[idx].correctCount >= 2) {
+        pool.splice(idx, 1); // 连续对2次，移出
+      }
+    }
+    DB.save(appData);
+  },
+  renderErrorPool(type) {
+    const child = getChild();
+    const pool = child.errorPool[type];
+    const chipId = type + 'ErrorChips';
+    const el = document.getElementById(chipId);
+    if (!el) return;
+    if (pool.length === 0) {
+      el.innerHTML = '<div class="error-empty">还没有错题呢，继续加油！💪</div>';
+    } else {
+      el.innerHTML = pool.map(p => {
+        const display = p.item.length > 10 ? p.item.slice(0, 10) + '...' : p.item;
+        return '<span class="error-chip" onclick="App.reviewError(\'' + type + '\', \'' + p.item.replace(/'/g, "\\'") + '\')">' + display + ' <span class="count">(' + p.correctCount + '/2)</span></span>';
+      }).join('');
+    }
+  },
+  reviewError(type, item) {
+    // 点击错题，跳到对应tab并展示
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+    const tabMap = { chinese: 'chinese', english: 'english', math: 'math' };
+    document.querySelector('[data-tab="'+tabMap[type]+'"]').classList.add('active');
+    document.getElementById('tab-'+tabMap[type]).classList.add('active');
+    // 提示
+    const fbId = tabMap[type] + 'Feedback';
+    this.showFeedback(fbId, 'encourage', '🧚‍♀️ 这道题之前没答对，再试试看？萌可相信你！');
+  },
+
+  // ==================== 奖励屋 ====================
+  renderReward() {
+    const child = getChild();
+    const t = CONFIG.rewardThresholds;
+    const items = [
+      { key:'sticker', icon:'🌟', name:'萌可贴纸', threshold:t.sticker },
+      { key:'theater', icon:'🎭', name:'萌可小剧场', threshold:t.theater },
+      { key:'privilege', icon:'👨‍👩‍👧', name:'亲子特权', threshold:t.privilege }
+    ];
+    const rg = document.getElementById('rewardGrid');
+    rg.innerHTML = '';
+    items.forEach(it => {
+      const unlocked = child.rewards[it.key];
+      const div = document.createElement('div');
+      div.className = 'reward-item ' + (unlocked ? 'unlocked' : 'locked');
+      const pct = Math.min(100, (child.totalPoints / it.threshold) * 100);
+      div.innerHTML =
+        '<div class="reward-icon">' + (unlocked ? it.icon : '🔒') + '</div>' +
+        '<div class="reward-name">' + it.name + '</div>' +
+        '<div class="reward-threshold">' + (unlocked ? '✅ 已解锁' : '满 ' + it.threshold + ' 分解锁') + '</div>' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+      rg.appendChild(div);
+    });
+
+    // 小剧场
+    if (child.rewards.theater) {
+      document.getElementById('theaterCard').style.display = 'block';
+      document.getElementById('theaterStory').textContent = THEATER_STORIES[child.theaterIndex % THEATER_STORIES.length];
+    } else {
+      document.getElementById('theaterCard').style.display = 'none';
+    }
+
+    // 亲子特权
+    if (child.rewards.privilege) {
+      document.getElementById('privilegeCard').style.display = 'block';
+      document.getElementById('privilegeContent').textContent = '🎉 恭喜！你可以兑换：' + appData.privilegeText;
+    } else {
+      document.getElementById('privilegeCard').style.display = 'none';
+    }
+  },
+
+  // ==================== 家长后台 ====================
+  toggleParent() {
+    const body = document.getElementById('parentBody');
+    const arrow = document.getElementById('parentArrow');
+    body.classList.toggle('show');
+    arrow.textContent = body.classList.contains('show') ? '▲' : '▼';
+    if (body.classList.contains('show')) this.renderParentBody();
+  },
+  renderParentBody() {
+    const child = getChild();
+    // 积分日志
+    const log = document.getElementById('pointsLog');
+    if (child.pointsLog.length === 0) {
+      log.innerHTML = '<table><tr><td style="text-align:center;color:#999;padding:20px;">还没有积分记录</td></tr></table>';
+    } else {
+      let html = '<table><tr><th>日期</th><th>时间</th><th>原因</th><th>积分</th></tr>';
+      child.pointsLog.slice(0, 50).forEach(l => {
+        html += '<tr><td>' + l.date + '</td><td>' + l.time + '</td><td>' + l.reason + '</td><td style="color:#FFA500;font-weight:bold;">+' + l.points + '</td></tr>';
+      });
+      html += '</table>';
+      log.innerHTML = html;
+    }
+
+    // 规则编辑
+    const re = document.getElementById('rulesEditor');
+    re.innerHTML =
+      '<div class="rule-row"><label>完成任务 +</label><input type="number" id="rule_task" value="' + appData.rules.taskComplete + '"></div>' +
+      '<div class="rule-row"><label>主动开口 +</label><input type="number" id="rule_speak" value="' + appData.rules.speakUp + '"></div>' +
+      '<div class="rule-row"><label>自己改对 +</label><input type="number" id="rule_correct" value="' + appData.rules.selfCorrect + '"></div>' +
+      '<div class="rule-row"><label>连续打卡上限</label><input type="number" id="rule_streak" value="' + appData.rules.streakMax + '"></div>';
+
+    // 特权输入
+    document.getElementById('privilegeInput').value = appData.privilegeText;
+  },
+  saveRules() {
+    appData.rules.taskComplete = parseInt(document.getElementById('rule_task').value) || 5;
+    appData.rules.speakUp = parseInt(document.getElementById('rule_speak').value) || 3;
+    appData.rules.selfCorrect = parseInt(document.getElementById('rule_correct').value) || 2;
+    appData.rules.streakMax = parseInt(document.getElementById('rule_streak').value) || 7;
+    DB.save(appData);
+    alert('规则已保存！💕');
+  },
+  savePrivilege() {
+    appData.privilegeText = document.getElementById('privilegeInput').value || '和爸爸妈妈一起看一部电影';
+    DB.save(appData);
+    alert('特权内容已保存！💕');
+    this.renderReward();
+  },
+  exportErrors() {
+    const child = getChild();
+    let txt = '===== ' + child.name + ' 的本周错题 =====\n';
+    txt += '导出时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+
+    if (child.errorPool.chinese.length > 0) {
+      txt += '【语文 - 错别字怪兽池】\n';
+      child.errorPool.chinese.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      txt += '\n';
+    }
+    if (child.errorPool.english.length > 0) {
+      txt += '【英语 - 复习池】\n';
+      child.errorPool.english.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      txt += '\n';
+    }
+    if (child.errorPool.math.length > 0) {
+      txt += '【思维 - 错题重练区】\n';
+      child.errorPool.math.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      txt += '\n';
+    }
+    if (child.errorPool.chinese.length + child.errorPool.english.length + child.errorPool.math.length === 0) {
+      txt += '太棒了！本周没有错题！🎉\n';
+    }
+
+    txt += '\n总积分：' + child.totalPoints + '\n';
+    txt += '连续打卡：' + child.streak + ' 天\n';
+    txt += '已掌握：字' + child.mastery.chinese.length + ' / 词' + child.mastery.english.length + ' / 题' + child.mastery.math.length + '\n';
+
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = child.name + '_错题_' + today + '.txt';
+    a.click();
+  },
+
+  // ==================== 二维码 ====================
+  generateQRCode() {
+    const el = document.getElementById('qrcode');
+    el.innerHTML = '';
+    try {
+      new QRCode(el, {
+        text: CONFIG.deployUrl,
+        width: 180,
+        height: 180,
+        colorDark: '#6B8AFD',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    } catch(e) {
+      el.innerHTML = '<p style="color:#999;">二维码加载失败，请检查网络连接</p>';
+    }
+  },
+
+  // ==================== 反馈显示 ====================
+  showFeedback(id, type, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'feedback ' + type + ' show';
+    el.innerHTML = '<span class="mascot-mini">🧚‍♀️</span> ' + msg;
+  }
+};
+
+// ==================== 启动 ====================
+document.addEventListener('DOMContentLoaded', () => App.init());
+window.App = App;
+
+})();
+</script>
+
+<!--
+====================================================================
+  部署说明（将此 HTML 部署到免费静态托管服务）
+====================================================================
+
+方法一：GitHub Pages（推荐，永久免费）
+  1. 注册账号：前往 https://github.com 注册一个 GitHub 账号
+  2. 上传文件：
+     a. 点击右上角 "+" → "New repository"，名称随意（如 mengke-learning）
+     b. 选择 "Public"，点击 "Create repository"
+     c. 点击 "uploading an existing file"，将 index.html 拖入上传
+     d. 点击 "Commit changes" 保存
+  3. 获取在线链接：
+     a. 进入仓库 → "Settings" → 左侧 "Pages"
+     b. Source 选择 "Deploy from a branch"，Branch 选 "main"，文件夹选 "/(root)"
+     c. 点击 "Save"，等待 1-2 分钟
+     d. 页面顶部会出现链接，形如：https://你的用户名.github.io/mengke-learning/
+  4. 替换二维码地址：
+     打开 index.html，找到 CONFIG.deployUrl 那一行，把占位符
+     'https://your-deploy-url.com/index.html'
+     替换为你的实际地址，如：
+     'https://你的用户名.github.io/mengke-learning/index.html'
+     保存后重新上传到 GitHub 即可
+
+方法二：Vercel（速度快，自动部署）
+  1. 注册账号：前往 https://vercel.com，用 GitHub 账号一键注册
+  2. 上传文件：
+     a. 点击 "Add New..." → "Project"
+     b. 可以先在 GitHub 建好仓库（同方法一第2步），然后选择 "Import Git Repository"
+     c. 也可以用 Vercel CLI：npm i -g vercel，在项目目录运行 vercel 命令
+  3. 获取在线链接：
+     部署完成后，Vercel 会自动给一个地址，形如：
+     https://mengke-learning.vercel.app
+  4. 替换二维码地址：
+     把 CONFIG.deployUrl 替换为你的 Vercel 地址 + /index.html
+
+方法三：Netlify（拖拽上传，最简单）
+  1. 注册账号：前往 https://netlify.com 注册
+  2. 上传文件：
+     a. 进入 "Sites" 页面
+     b. 直接把 index.html 文件拖到页面中央的拖拽区域
+     c. 自动部署完成
+  3. 获取在线链接：
+     部署完成后会显示地址，形如：
+     https://mengke-learning.netlify.app
+  4. 替换二维码地址：
+     把 CONFIG.deployUrl 替换为你的 Netlify 地址 + /index.html
+
+====================================================================
+  怎么改成你家的娃
+====================================================================
+
+打开 index.html，找到代码开头的 CONFIG 配置区，修改以下变量：
+
+1. 昵称和年级 —— 修改 CONFIG.children 数组：
+   { id: 'duobao', name: '李多宝', grade: '2年级', age: 7 }
+   把 name 改成你家娃的昵称，grade 改成年级，age 改成年龄
+   可以增加或减少娃的数量，每个娃需要一个唯一的 id
+
+2. IP 名 —— 修改 CONFIG.ipName（当前为 '爱心萌可'）
+   换成你家娃喜欢的 IP 名字
+
+3. 积分阈值 —— 修改 CONFIG.rewardThresholds：
+   { sticker: 20, theater: 50, privilege: 100 }
+   分别是解锁贴纸、小剧场、亲子特权所需的积分
+
+4. 积分规则 —— 修改 CONFIG.defaultRules：
+   { taskComplete: 5, speakUp: 3, selfCorrect: 2, streakMax: 7 }
+   分别是完成任务、主动开口、自己改对、连续打卡上限的加分
+
+5. 学习内容 —— 修改 CONTENT 对象：
+   按娃的 id 添加对应的生字、阅读、英语单词、数学题
+   格式参照已有的 duobao 和 yunxi
+
+6. 部署地址 —— 部署后修改 CONFIG.deployUrl 为实际在线地址
+
+7. 亲子特权内容 —— 在家长后台的"亲子特权设置"中填写，或修改代码中的 privilegeText
+
+====================================================================
+-->
+</body>
+</html>
