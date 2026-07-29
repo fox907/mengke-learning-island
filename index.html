@@ -689,6 +689,65 @@ body {
   .char-card { flex-direction: column; align-items: center; }
 }
 
+/* ==================== 家长密码门禁 ==================== */
+.parent-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.parent-gate .lock-icon { font-size: 72px; margin-bottom: 16px; animation: bounce 2s ease-in-out infinite; }
+.parent-gate .gate-title { font-size: var(--font-huge); font-weight: bold; color: var(--primary); margin-bottom: 8px; }
+.parent-gate .gate-hint { font-size: var(--font-size); color: var(--text-light); margin-bottom: 24px; }
+.parent-gate input[type="password"] {
+  width: 200px;
+  padding: 14px 20px;
+  border: 3px solid var(--primary-light);
+  border-radius: 16px;
+  font-size: var(--font-huge);
+  text-align: center;
+  letter-spacing: 8px;
+  margin-bottom: 16px;
+}
+.parent-gate input[type="password"]:focus { border-color: var(--primary); outline: none; }
+.gate-error { color: var(--danger); font-size: var(--font-size); margin-bottom: 12px; min-height: 24px; }
+
+.parent-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #FFF3E0, #FFE8F5);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+}
+.parent-toolbar .toolbar-info { font-size: var(--font-size); color: var(--text); }
+.parent-toolbar .toolbar-info strong { color: var(--primary); }
+.lock-btn {
+  background: var(--text-light);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.lock-btn:hover { background: var(--danger); }
+
+.pwd-change-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.pwd-change-row input {
+  width: 180px;
+  padding: 8px 12px;
+  border: 2px solid #E0E0F0;
+  border-radius: 8px;
+  font-size: var(--font-size);
+}
+.pwd-change-row input:focus { border-color: var(--primary); outline: none; }
+
 /* ==================== 家长后台新增 ==================== */
 .overview-table {
   width: 100%;
@@ -997,6 +1056,24 @@ body {
 
     <!-- ==================== 家长后台 ==================== -->
     <div class="tab-content" id="tab-parent">
+      <!-- 密码门禁 -->
+      <div class="parent-gate" id="parentGate">
+        <div class="lock-icon">🔐</div>
+        <div class="gate-title">家长通道</div>
+        <div class="gate-hint">请输入密码进入家长后台<br>（默认密码：1234，进入后请修改）</div>
+        <input type="password" id="parentPwdInput" placeholder="密码" maxlength="20" onkeydown="if(event.key==='Enter')App.checkParentPassword()">
+        <div class="gate-error" id="pwdError"></div>
+        <button class="btn btn-primary" onclick="App.checkParentPassword()">🔑 进入</button>
+      </div>
+
+      <!-- 家长后台内容（验证后显示） -->
+      <div id="parentContent" style="display:none;">
+        <!-- 工具栏 -->
+        <div class="parent-toolbar">
+          <div class="toolbar-info">👤 已登录家长后台 · 当前孩子：<strong id="toolbarChildName"></strong></div>
+          <button class="lock-btn" onclick="App.lockParent()">🔒 锁定</button>
+        </div>
+
       <!-- 今日学习概览 -->
       <div class="card">
         <div class="card-title">📅 今日学习概览</div>
@@ -1073,6 +1150,20 @@ body {
           </div>
         </div>
       </div>
+
+      <!-- 修改密码 -->
+      <div class="card">
+        <div class="card-title">🔑 修改家长密码</div>
+        <div class="pwd-change-row">
+          <input type="password" id="oldPwd" placeholder="当前密码">
+          <input type="password" id="newPwd" placeholder="新密码">
+          <input type="password" id="confirmPwd" placeholder="确认新密码">
+          <button class="btn btn-primary" onclick="App.changeParentPassword()">保存密码</button>
+        </div>
+        <div class="feedback" id="pwdChangeFeedback"></div>
+      </div>
+
+      </div><!-- /parentContent -->
     </div>
 
     <div style="text-align:center;color:var(--text-light);font-size:14px;padding:20px 0;">
@@ -1275,6 +1366,7 @@ const DB = {
       rules: Object.assign({}, CONFIG.defaultRules),
       rewardThresholds: Object.assign({}, CONFIG.rewardThresholds),
       privilegeText: '和爸爸妈妈一起看一部电影',
+      parentPassword: '1234',
       children: {}
     };
     CONFIG.children.forEach(c => {
@@ -1301,6 +1393,11 @@ const DB = {
 
 let appData = DB.load();
 let today = new Date().toISOString().slice(0, 10);
+// 兼容老数据：补充 parentPassword 字段
+if (!appData.parentPassword) {
+  appData.parentPassword = '1234';
+  DB.save(appData);
+}
 // 加载已保存的奖励阈值
 if (appData.rewardThresholds) {
   CONFIG.rewardThresholds = appData.rewardThresholds;
@@ -1368,7 +1465,13 @@ const App = {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'parent') this.renderParentBody();
+        if (btn.dataset.tab === 'parent') {
+          if (!this._parentUnlocked) {
+            this.showParentGate();
+          } else {
+            this.showParentContent();
+          }
+        }
       };
     });
   },
@@ -2032,6 +2135,66 @@ const App = {
     }
   },
 
+  // ==================== 家长密码门禁 ====================
+  _parentUnlocked: false,
+
+  showParentGate() {
+    document.getElementById('parentGate').style.display = 'flex';
+    document.getElementById('parentContent').style.display = 'none';
+    document.getElementById('pwdError').textContent = '';
+    const input = document.getElementById('parentPwdInput');
+    input.value = '';
+    setTimeout(() => input.focus(), 100);
+  },
+  checkParentPassword() {
+    const input = document.getElementById('parentPwdInput').value;
+    const err = document.getElementById('pwdError');
+    if (input === appData.parentPassword) {
+      this._parentUnlocked = true;
+      err.textContent = '';
+      this.showParentContent();
+    } else {
+      err.textContent = '❌ 密码错误，请重试！';
+      document.getElementById('parentPwdInput').value = '';
+      document.getElementById('parentPwdInput').focus();
+    }
+  },
+  showParentContent() {
+    document.getElementById('parentGate').style.display = 'none';
+    document.getElementById('parentContent').style.display = 'block';
+    const child = getChild();
+    const tn = document.getElementById('toolbarChildName');
+    if (tn) tn.textContent = child.name;
+    this.renderParentBody();
+  },
+  lockParent() {
+    this._parentUnlocked = false;
+    this.showParentGate();
+  },
+  changeParentPassword() {
+    const oldPwd = document.getElementById('oldPwd').value;
+    const newPwd = document.getElementById('newPwd').value;
+    const confirmPwd = document.getElementById('confirmPwd').value;
+    if (oldPwd !== appData.parentPassword) {
+      this.showFeedback('pwdChangeFeedback', 'encourage', '❌ 当前密码不正确！');
+      return;
+    }
+    if (!newPwd || newPwd.length < 4) {
+      this.showFeedback('pwdChangeFeedback', 'encourage', '🧚‍♀️ 新密码至少4位哦！');
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      this.showFeedback('pwdChangeFeedback', 'encourage', '❌ 两次输入的新密码不一致！');
+      return;
+    }
+    appData.parentPassword = newPwd;
+    DB.save(appData);
+    this.showFeedback('pwdChangeFeedback', 'success', '🧚‍♀️ 密码修改成功！下次请用新密码进入~');
+    document.getElementById('oldPwd').value = '';
+    document.getElementById('newPwd').value = '';
+    document.getElementById('confirmPwd').value = '';
+  },
+
   // ==================== 家长后台 ====================
   renderParentBody() {
     const child = getChild();
@@ -2303,11 +2466,12 @@ const App = {
 
   // ==================== 一键清零全部数据 ====================
   resetAllData() {
-    this.showConfirm('💥', '⚠️ 警告！这将清零所有孩子的全部数据！\n包括积分、打卡、错题、奖励、日记等所有记录！\n此操作不可恢复！\n\n确定要继续吗？', () => {
+    this.showConfirm('💥', '⚠️ 警告！这将清零所有孩子的全部数据！\n包括积分、打卡、错题、奖励、日记等所有记录！\n密码将恢复为默认密码 1234！\n此操作不可恢复！\n\n确定要继续吗？', () => {
       appData = DB.init();
       CONFIG.rewardThresholds = appData.rewardThresholds;
+      this._parentUnlocked = false;
       this.init();
-      this.renderParentBody();
+      this.showParentGate();
     });
   },
 
