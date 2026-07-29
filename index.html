@@ -714,6 +714,9 @@ body {
     <button class="nav-item" data-tab="reward">
       <span class="nav-icon">🎁</span><span>奖励屋</span>
     </button>
+    <button class="nav-item" data-tab="parent">
+      <span class="nav-icon">🔐</span><span>家长后台</span>
+    </button>
   </nav>
 
   <!-- ==================== 主区域 ==================== -->
@@ -774,8 +777,21 @@ body {
         <div class="card-title">📖 今日阅读</div>
         <div class="reading-passage" id="readingPassage"></div>
         <div id="readingQuestions"></div>
-        <button class="btn btn-success" style="margin-top:12px;" onclick="App.submitReading()">✅ 读完了，我来说说</button>
+        <button class="btn btn-success" style="margin-top:12px;" onclick="App.submitReading()">✅ 提交答案</button>
         <div class="feedback" id="readingFeedback"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎙️ 语音日记</div>
+        <div id="voiceDiaryArea">
+          <p style="font-size:var(--font-large);color:var(--text-light);">今天有什么开心的事想告诉萌可吗？大声说出来吧！</p>
+          <button class="btn btn-primary" onclick="App.startVoiceDiary()">🎙️ 开始录音</button>
+          <button class="btn btn-outline" id="stopDiaryBtn" style="display:none;" onclick="App.stopVoiceDiary()">⏹️ 结束录音</button>
+          <div id="diaryTranscript" style="margin-top:12px;font-size:var(--font-large);line-height:1.8;min-height:40px;"></div>
+          <button class="btn btn-success" id="saveDiaryBtn" style="display:none;margin-top:12px;" onclick="App.saveVoiceDiary()">💾 保存日记</button>
+          <div class="feedback" id="diaryFeedback"></div>
+          <div id="diaryHistory" style="margin-top:16px;"></div>
+        </div>
       </div>
 
       <div class="card">
@@ -824,9 +840,10 @@ body {
     <!-- ==================== 思维岛 ==================== -->
     <div class="tab-content" id="tab-math">
       <div class="card">
-        <div class="card-title">🧠 每日一题</div>
+        <div class="card-title">🧠 趣味挑战 <span id="mathCount" style="font-size:16px;color:var(--text-light);font-weight:normal;">今日已做 0 题</span></div>
         <div class="math-problem" id="mathProblem"></div>
         <button class="btn btn-primary" style="margin-top:12px;" onclick="App.submitMath()">提交答案</button>
+        <button class="btn btn-success" id="nextMathBtn" style="display:none;margin-top:12px;margin-left:8px;" onclick="App.nextMath()">➡️ 下一题</button>
         <div class="feedback" id="mathFeedback"></div>
       </div>
 
@@ -869,35 +886,43 @@ body {
     </div>
 
     <!-- ==================== 家长后台 ==================== -->
-    <div class="parent-section">
-      <div class="parent-header" onclick="App.toggleParent()">
-        <span>🔐 家长后台</span>
-        <span id="parentArrow">▼</span>
-      </div>
-      <div class="parent-body" id="parentBody">
-        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">📊 积分日志</h3>
+    <div class="tab-content" id="tab-parent">
+      <div class="card">
+        <div class="card-title">📊 积分日志</div>
         <div class="points-log" id="pointsLog"></div>
+      </div>
 
-        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">⚙️ 积分规则设置</h3>
+      <div class="card">
+        <div class="card-title">⚙️ 积分规则设置</div>
         <div id="rulesEditor"></div>
-        <button class="btn btn-primary" style="margin-top:12px;" onclick="App.saveRules()">保存规则</button>
+        <div style="margin-top:16px;">
+          <h4 style="font-size:var(--font-large);margin-bottom:8px;">🏆 奖励阈值设置</h4>
+          <div id="thresholdEditor"></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="App.saveRules()">保存设置</button>
+      </div>
 
-        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">📥 导出本周错题</h3>
-        <button class="btn btn-outline" onclick="App.exportErrors()">导出为 TXT 文件</button>
+      <div class="card">
+        <div class="card-title">📋 错题集（按孩子分类）</div>
+        <div id="errorCollection"></div>
+      </div>
 
-        <h3 style="margin:16px 0 8px;font-size:var(--font-large);">🎁 亲子特权设置</h3>
+      <div class="card">
+        <div class="card-title">📥 导出错题</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-outline" onclick="App.exportErrors()">导出当前孩子错题 TXT</button>
+          <button class="btn btn-outline" onclick="App.exportAllErrors()">导出全部孩子错题 TXT</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎁 亲子特权设置</div>
         <div class="rule-row">
           <label>满100分兑换的特权内容：</label>
           <input type="text" id="privilegeInput" style="width:300px;" placeholder="如：和爸爸妈妈一起看一部电影">
         </div>
-        <button class="btn btn-secondary" onclick="App.savePrivilege()">保存特权</button>
+        <button class="btn btn-secondary" style="margin-top:12px;" onclick="App.savePrivilege()">保存特权</button>
       </div>
-    </div>
-
-    <!-- ==================== 二维码 ==================== -->
-    <div class="qr-section">
-      <div id="qrcode"></div>
-      <p class="qr-hint">📱 家长扫码后在微信里打开，可查看孩子学习进度和积分</p>
     </div>
 
     <div style="text-align:center;color:var(--text-light);font-size:14px;padding:20px 0;">
@@ -960,11 +985,23 @@ const CONTENT = {
     ],
     readings: [
       { title:'春天来了', text:'春天来了，小草从泥土里钻出来，绿绿的。桃花开了，粉粉的。小燕子从南方飞回来了，在天上快乐地唱歌。小朋友们在草地上放风筝，跑啊跑，笑啊笑。',
-        questions:['小草是什么颜色的？你还在哪里见过这样颜色的植物呢？','小燕子从哪里飞回来的？你觉得它为什么要飞回来？','小朋友们在做什么？你喜欢在春天做什么？'] },
+        questions:[
+          {q:'小草是什么颜色的？', options:['红色的','绿色的','黄色的'], a:'绿色的'},
+          {q:'小燕子从哪里飞回来的？', options:['北方','南方','西方'], a:'南方'},
+          {q:'小朋友们在草地上做什么？', options:['放风筝','踢足球','捉迷藏'], a:'放风筝'}
+        ] },
       { title:'小蚂蚁搬家', text:'天要下雨了，小蚂蚁忙着搬家。它们排着长长的队伍，有的扛着食物，有的搬着宝宝。大家齐心协力，不怕困难。终于，在雨来之前，它们搬到了新家。',
-        questions:['小蚂蚁为什么要搬家？你怎么知道的？','它们搬了哪些东西？如果你是蚂蚁，你会搬什么？','"齐心协力"是什么意思？你和小伙伴做过什么事是齐心协力的？'] },
+        questions:[
+          {q:'小蚂蚁为什么要搬家？', options:['要下雨了','要天黑了','找朋友玩'], a:'要下雨了'},
+          {q:'小蚂蚁搬家时排成了什么样的队伍？', options:['圆圆的队伍','长长的队伍','乱乱的队伍'], a:'长长的队伍'},
+          {q:'"齐心协力"是什么意思？', options:['一个人偷偷做','大家一起用力做事','不想做事'], a:'大家一起用力做事'}
+        ] },
       { title:'月亮船', text:'天黑了，月亮出来了，像一只小船挂在天上。星星一闪一闪的，像在跟月亮说话。小兔子看着月亮，心想：如果我坐在月亮船上，就能飞到天上去啦！',
-        questions:['月亮像什么？你还觉得月亮像什么？','星星在做什么？你觉得星星想跟月亮说什么？','小兔子的心愿是什么？你有什么心愿呢？'] }
+        questions:[
+          {q:'月亮像什么？', options:['一面镜子','一只小船','一个苹果'], a:'一只小船'},
+          {q:'星星在做什么？', options:['睡觉','一闪一闪的','跳舞'], a:'一闪一闪的'},
+          {q:'小兔子的心愿是什么？', options:['坐在月亮船上飞到天上','吃胡萝卜','去游泳'], a:'坐在月亮船上飞到天上'}
+        ] }
     ],
     englishWords: [
       [{en:'cat',cn:'猫',emoji:'🐱',sentence:'I have a cat.'},{en:'dog',cn:'狗',emoji:'🐶',sentence:'The dog is big.'},{en:'sun',cn:'太阳',emoji:'☀️',sentence:'The sun is hot.'}],
@@ -1001,11 +1038,23 @@ const CONTENT = {
     ],
     readings: [
       { title:'坚持的力量', text:'小明学骑自行车，一开始总是摔倒。膝盖磕破了，手掌也擦伤了。他很想放弃。但是爸爸告诉他："每一次摔倒，都是在学会平衡。"小明咬咬牙，又爬上了车。第一天，他摔了十次。第二天，摔了五次。第三天，他终于骑了整整一圈没有倒下来！小明开心极了，他明白了：坚持，就是离成功越来越近。',
-        questions:['小明想放弃的时候，爸爸说了什么？你怎么理解这句话？','小明每天摔倒的次数在怎么变化？这说明了什么？','你有没有类似小明的经历？当时你是怎么做的？'] },
+        questions:[
+          {q:'小明想放弃的时候，爸爸说了什么？', options:['别学了','每一次摔倒都是在学会平衡','摔倒了就别骑了'], a:'每一次摔倒都是在学会平衡'},
+          {q:'小明第一天摔了几次？', options:['五次','十次','一次'], a:'十次'},
+          {q:'这个故事告诉我们什么道理？', options:['坚持就是离成功越来越近','骑车很危险','不要学新东西'], a:'坚持就是离成功越来越近'}
+        ] },
       { title:'一棵树的秘密', text:'校园里有一棵老槐树，已经一百多岁了。春天，它开出满树的白花，香气飘满校园。夏天，同学们在树下乘凉、读书。秋天，树叶变黄了，像蝴蝶一样飘落。冬天，它光着枝丫，却依然挺立在寒风中。老槐树像一个沉默的朋友，看着一届又一届学生长大。',
-        questions:['老槐树有多少岁了？你觉得它见过什么事情？','四季中老槐树分别是什么样子？你最喜欢哪个季节的它？','为什么说老槐树"像沉默的朋友"？你有这样的朋友吗？'] },
+        questions:[
+          {q:'老槐树有多少岁了？', options:['十多岁','一百多岁','刚种下'], a:'一百多岁'},
+          {q:'春天老槐树开什么颜色的花？', options:['红花','白花','黄花'], a:'白花'},
+          {q:'为什么说老槐树"像沉默的朋友"？', options:['因为它会说话','因为它一直默默陪伴学生成长','因为它很小'], a:'因为它一直默默陪伴学生成长'}
+        ] },
       { title:'星星的对话', text:'夜空中，两颗星星在聊天。小星星说："我太小了，发出的光很微弱，没人会注意到我。"大星星说："但如果没有你，天空就少了一点光。每一个小小的光，加在一起，才成了璀璨的银河。"小星星听了，不再难过，努力发出自己最亮的光。',
-        questions:['小星星为什么难过？你有没有过类似的感受？','大星星说了什么？你觉得它说得对吗？','这个故事想告诉我们什么道理？'] }
+        questions:[
+          {q:'小星星为什么难过？', options:['觉得自己太小光很微弱','被大星星欺负了','不想发光了'], a:'觉得自己太小光很微弱'},
+          {q:'大星星说了什么？', options:['你确实没用','每个小小的光加在一起才成了银河','别发光了'], a:'每个小小的光加在一起才成了银河'},
+          {q:'这个故事想告诉我们什么？', options:['大的才重要','每个人都有自己的价值','星星不会发光'], a:'每个人都有自己的价值'}
+        ] }
     ],
     englishWords: [
       [{en:'adventure',cn:'冒险',emoji:'🗺️',sentence:'We had a great adventure.'},{en:'discover',cn:'发现',emoji:'🔍',sentence:'I discover something new.'},{en:'journey',cn:'旅程',emoji:'🚂',sentence:'The journey was long.'}],
@@ -1062,6 +1111,7 @@ const DB = {
     const data = {
       currentChild: 'duobao',
       rules: Object.assign({}, CONFIG.defaultRules),
+      rewardThresholds: Object.assign({}, CONFIG.rewardThresholds),
       privilegeText: '和爸爸妈妈一起看一部电影',
       children: {}
     };
@@ -1075,8 +1125,11 @@ const DB = {
         rewards: { sticker: false, theater: false, privilege: false },
         errorPool: { chinese: [], english: [], math: [] },
         mastery: { chinese: [], english: [], math: [] },
-        completedToday: { date: null, chinese: false, english: false, math: false, englishWords: [], readAloud: false },
-        theaterIndex: 0
+        completedToday: { date: null, chinese: false, english: false, math: false, englishWords: [], readAloud: false, voiceDiary: false, readingDone: false },
+        theaterIndex: 0,
+        mathCount: 0,
+        mathIndex: 0,
+        diaries: []
       };
     });
     this.save(data);
@@ -1086,6 +1139,10 @@ const DB = {
 
 let appData = DB.load();
 let today = new Date().toISOString().slice(0, 10);
+// 加载已保存的奖励阈值
+if (appData.rewardThresholds) {
+  CONFIG.rewardThresholds = appData.rewardThresholds;
+}
 let selectedSentenceOption = null;
 
 // ==================== 工具函数 ====================
@@ -1113,7 +1170,6 @@ const App = {
     this.renderChildSwitcher();
     this.switchChild(appData.currentChild);
     this.initNav();
-    this.generateQRCode();
     this.checkFirstVisit();
   },
 
@@ -1150,6 +1206,7 @@ const App = {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'parent') this.renderParentBody();
       };
     });
   },
@@ -1171,7 +1228,7 @@ const App = {
     }
     child.lastVisit = today;
     // 重置今日完成状态
-    child.completedToday = { date: today, chinese: false, english: false, math: false, englishWords: [], readAloud: false };
+    child.completedToday = { date: today, chinese: false, english: false, math: false, englishWords: [], readAloud: false, voiceDiary: false, readingDone: false, mathCount: child.mathCount || 0 };
     DB.save(appData);
   },
 
@@ -1251,9 +1308,9 @@ const App = {
 
     // 今日任务卡片
     const tasks = [
-      { key:'chinese', icon:'📚', label:'语文：学1个生字 + 读1篇短文', done: child.completedToday.chinese },
+      { key:'chinese', icon:'📚', label:'语文：学1个生字 + 读1篇短文 + 语音日记', done: child.completedToday.chinese },
       { key:'english', icon:'🌍', label:'英语：学3个单词 + 跟读', done: child.completedToday.english },
-      { key:'math', icon:'🧮', label:'思维：做1道逻辑题', done: child.completedToday.math }
+      { key:'math', icon:'🧮', label:'思维：趣味挑战（想做多少做多少！）', done: child.completedToday.math }
     ];
     const tc = document.getElementById('taskCards');
     tc.innerHTML = '';
@@ -1335,17 +1392,25 @@ const App = {
       this.strokeWriter = null;
     }
 
-    // 阅读理解
+    // 阅读理解 - 选择题
     const reading = getDaily(content.readings);
     document.getElementById('readingPassage').innerHTML = '<strong>' + reading.title + '</strong><br>' + reading.text;
     const rq = document.getElementById('readingQuestions');
     rq.innerHTML = '';
     reading.questions.forEach((q, i) => {
-      rq.innerHTML += '<div class="reading-q"><div class="q-label">🤔 第' + (i+1) + '题</div><div>' + q + '</div><textarea placeholder="说说你的想法～"></textarea></div>';
+      let html = '<div class="reading-q"><div class="q-label">🤔 第' + (i+1) + '题</div><div style="font-size:var(--font-large);margin-bottom:8px;">' + q.q + '</div><div class="option-btns">';
+      q.options.forEach(opt => {
+        html += '<button class="option-btn" data-q="' + i + '" data-val="' + opt.replace(/'/g, "\\'") + '" onclick="App.selectReadingOption(this)">' + opt + '</button>';
+      });
+      html += '</div></div>';
+      rq.innerHTML += html;
     });
 
     // 错字池
     this.renderErrorPool('chinese');
+
+    // 语音日记历史
+    this.renderDiaryHistory();
   },
   replayStroke() {
     if (this.strokeWriter) {
@@ -1366,27 +1431,121 @@ const App = {
     DB.save(appData);
     this.renderHome();
   },
+  selectReadingOption(btn) {
+    btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  },
   submitReading() {
     const child = getChild();
     const content = getChildContent();
     const reading = getDaily(content.readings);
-    const textareas = document.querySelectorAll('#readingQuestions textarea');
-    let allFilled = true;
-    textareas.forEach(t => { if (!t.value.trim()) allFilled = false; });
-    if (allFilled) {
-      if (!child.completedToday.chinese) {
-        child.completedToday.chinese = true;
+    let allAnswered = true;
+    let allCorrect = true;
+    reading.questions.forEach((q, i) => {
+      const selected = document.querySelector('.option-btn[data-q="'+i+'"].selected');
+      if (!selected) { allAnswered = false; return; }
+      const val = selected.dataset.val;
+      if (val !== q.a) {
+        allCorrect = false;
+        this.addToErrorPool('chinese', '阅读题: ' + q.q.slice(0, 15));
+      }
+    });
+    if (!allAnswered) {
+      this.showFeedback('readingFeedback', 'encourage', '🧚‍♀️ 萌可觉得每道题都选一下会更棒！');
+      return;
+    }
+    if (allCorrect) {
+      this.showFeedback('readingFeedback', 'success', '🧚‍♀️ 全部答对啦！你真的好厉害！');
+      reading.questions.forEach(q => this.handleCorrect('chinese', '阅读题: ' + q.q.slice(0, 15)));
+      if (!child.completedToday.readingDone) {
+        child.completedToday.readingDone = true;
+        if (!child.completedToday.chinese) {
+          child.completedToday.chinese = true;
+        }
         this.addPoints(appData.rules.taskComplete, '语文：完成阅读理解');
       }
-      this.showFeedback('readingFeedback', 'success', '🧚‍♀️ 你的想法好有趣！萌可想到了更多的故事呢！');
-      DB.save(appData);
-      this.renderHome();
     } else {
-      this.showFeedback('readingFeedback', 'encourage', '🧚‍♀️ 萌可觉得再想想会更棒！每个问题都说说看～');
+      this.showFeedback('readingFeedback', 'encourage', '🧚‍♀️ 萌可觉得再试一次会更棒！看看文章再想想～');
     }
+    DB.save(appData);
+    this.renderHome();
   },
 
-  // ==================== 英语岛 ====================
+  // ---- 语音日记 ----
+  startVoiceDiary() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      document.getElementById('diaryTranscript').innerHTML = '⚠️ 当前浏览器不支持语音识别，请用 Chrome 或 Edge 试试。也可以直接在下方输入框打字哦！<br><textarea id="diaryTextInput" placeholder="今天发生了什么开心的事？" style="width:100%;height:80px;margin-top:8px;font-size:var(--font-size);border-radius:8px;border:2px solid var(--primary-light);padding:8px;"></textarea>';
+      document.getElementById('saveDiaryBtn').style.display = 'inline-block';
+      return;
+    }
+    const recognition = new SR();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    document.getElementById('diaryTranscript').textContent = '🎤 正在听...大声说出来吧！';
+    document.querySelector('button[onclick="App.startVoiceDiary()"]').style.display = 'none';
+    document.getElementById('stopDiaryBtn').style.display = 'inline-block';
+    let finalText = '';
+    recognition.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      document.getElementById('diaryTranscript').textContent = finalText + interim;
+    };
+    recognition.onerror = () => {
+      document.getElementById('diaryTranscript').textContent = '🧚‍♀️ 没听清呢，再试一次吧！也可以打字输入哦～';
+    };
+    this._diaryRecognition = recognition;
+    recognition.start();
+  },
+  stopVoiceDiary() {
+    if (this._diaryRecognition) { this._diaryRecognition.stop(); this._diaryRecognition = null; }
+    document.getElementById('stopDiaryBtn').style.display = 'none';
+    document.querySelector('button[onclick="App.startVoiceDiary()"]').style.display = 'inline-block';
+    document.getElementById('saveDiaryBtn').style.display = 'inline-block';
+  },
+  saveVoiceDiary() {
+    const child = getChild();
+    let text = '';
+    const textInput = document.getElementById('diaryTextInput');
+    if (textInput) {
+      text = textInput.value.trim();
+    } else {
+      text = document.getElementById('diaryTranscript').textContent.replace('🎤 正在听...大声说出来吧！', '').trim();
+    }
+    if (!text) {
+      this.showFeedback('diaryFeedback', 'encourage', '🧚‍♀️ 萌可觉得先说点什么再保存会更棒！');
+      return;
+    }
+    child.diaries = child.diaries || [];
+    child.diaries.unshift({ date: today, text: text });
+    if (!child.completedToday.voiceDiary) {
+      child.completedToday.voiceDiary = true;
+      this.addPoints(appData.rules.speakUp, '语文：完成语音日记');
+    }
+    DB.save(appData);
+    this.showFeedback('diaryFeedback', 'success', '🧚‍♀️ 你的日记好有趣！萌可帮你存好啦！');
+    document.getElementById('diaryTranscript').textContent = '';
+    document.getElementById('saveDiaryBtn').style.display = 'none';
+    this.renderDiaryHistory();
+    this.renderHome();
+  },
+  renderDiaryHistory() {
+    const child = getChild();
+    const el = document.getElementById('diaryHistory');
+    if (!el) return;
+    if (!child.diaries || child.diaries.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-light);font-size:var(--font-size);">还没有日记哦，快来写第一篇吧！</div>';
+      return;
+    }
+    el.innerHTML = '<div style="font-weight:bold;margin-bottom:8px;">📖 我的日记本</div>' +
+      child.diaries.slice(0, 5).map(d =>
+        '<div style="background:#F8F6FF;border-radius:8px;padding:10px;margin-bottom:8px;"><span style="color:var(--text-light);font-size:14px;">' + d.date + '</span><br>' + d.text + '</div>'
+      ).join('');
+  },
   renderEnglish() {
     const child = getChild();
     const content = getChildContent();
@@ -1536,7 +1695,8 @@ const App = {
   renderMath() {
     const child = getChild();
     const content = getChildContent();
-    const problem = getDaily(content.math);
+    child.mathIndex = child.mathIndex || 0;
+    const problem = content.math[child.mathIndex % content.math.length];
 
     const el = document.getElementById('mathProblem');
     if (problem.type === 'fill') {
@@ -1552,6 +1712,10 @@ const App = {
     el.dataset.hint = problem.hint || '';
     el.dataset.answer = problem.a;
     document.getElementById('mathFeedback').className = 'feedback';
+    document.getElementById('nextMathBtn').style.display = 'none';
+
+    // 更新计数
+    document.getElementById('mathCount').textContent = '今日已做 ' + (child.mathCount || 0) + ' 题';
 
     this.renderErrorPool('math');
   },
@@ -1563,7 +1727,7 @@ const App = {
   submitMath() {
     const child = getChild();
     const content = getChildContent();
-    const problem = getDaily(content.math);
+    const problem = content.math[child.mathIndex % content.math.length];
     let userAns;
     if (problem.type === 'fill') {
       userAns = document.getElementById('mathInput').value.trim();
@@ -1573,14 +1737,17 @@ const App = {
     if (userAns === problem.a) {
       this.showFeedback('mathFeedback', 'success', '🧚‍♀️ 答对啦！你真是小天才！');
       this.handleCorrect('math', problem.q);
+      child.mathCount = (child.mathCount || 0) + 1;
       if (!child.completedToday.math) {
         child.completedToday.math = true;
-        this.addPoints(appData.rules.taskComplete, '思维：完成逻辑题');
-      } else {
-        this.addPoints(appData.rules.selfCorrect, '思维：额外答题正确');
       }
-      child.mastery.math.push(problem.q.slice(0, 10));
+      this.addPoints(appData.rules.taskComplete, '思维：第' + child.mathCount + '题答对');
+      if (child.mastery.math.indexOf(problem.q.slice(0, 10)) === -1) {
+        child.mastery.math.push(problem.q.slice(0, 10));
+      }
       DB.save(appData);
+      document.getElementById('nextMathBtn').style.display = 'inline-block';
+      document.getElementById('mathCount').textContent = '今日已做 ' + child.mathCount + ' 题';
       this.renderHome();
     } else {
       const hint = problem.hint ? '<br>💡 小提示：' + problem.hint : '';
@@ -1588,6 +1755,13 @@ const App = {
       this.addToErrorPool('math', problem.q);
       DB.save(appData);
     }
+  },
+  nextMath() {
+    const child = getChild();
+    const content = getChildContent();
+    child.mathIndex = (child.mathIndex || 0) + 1;
+    DB.save(appData);
+    this.renderMath();
   },
 
   // ==================== 错题池管理 ====================
@@ -1645,6 +1819,20 @@ const App = {
   renderReward() {
     const child = getChild();
     const t = CONFIG.rewardThresholds;
+    const r = appData.rules;
+
+    // 动态更新规则显示
+    const rd = document.getElementById('rulesDisplay');
+    if (rd) {
+      rd.innerHTML =
+        '<p>✅ 完成任务 +' + r.taskComplete + ' 积分</p>' +
+        '<p>🎤 主动开口 +' + r.speakUp + ' 积分</p>' +
+        '<p>💪 自己改对 +' + r.selfCorrect + ' 积分</p>' +
+        '<p>🔥 连续第 N 天 +N 积分（上限 ' + r.streakMax + '）</p>' +
+        '<p>🧮 思维岛每题答对 +' + r.taskComplete + ' 积分（不限量！）</p>' +
+        '<p style="color:var(--success);font-weight:bold;">💗 不扣分！只加分！</p>';
+    }
+
     const items = [
       { key:'sticker', icon:'🌟', name:'萌可贴纸', threshold:t.sticker },
       { key:'theater', icon:'🎭', name:'萌可小剧场', threshold:t.theater },
@@ -1683,13 +1871,6 @@ const App = {
   },
 
   // ==================== 家长后台 ====================
-  toggleParent() {
-    const body = document.getElementById('parentBody');
-    const arrow = document.getElementById('parentArrow');
-    body.classList.toggle('show');
-    arrow.textContent = body.classList.contains('show') ? '▲' : '▼';
-    if (body.classList.contains('show')) this.renderParentBody();
-  },
   renderParentBody() {
     const child = getChild();
     // 积分日志
@@ -1713,16 +1894,55 @@ const App = {
       '<div class="rule-row"><label>自己改对 +</label><input type="number" id="rule_correct" value="' + appData.rules.selfCorrect + '"></div>' +
       '<div class="rule-row"><label>连续打卡上限</label><input type="number" id="rule_streak" value="' + appData.rules.streakMax + '"></div>';
 
+    // 奖励阈值编辑
+    const te = document.getElementById('thresholdEditor');
+    const t = CONFIG.rewardThresholds;
+    te.innerHTML =
+      '<div class="rule-row"><label>贴纸解锁积分</label><input type="number" id="th_sticker" value="' + t.sticker + '"></div>' +
+      '<div class="rule-row"><label>小剧场解锁积分</label><input type="number" id="th_theater" value="' + t.theater + '"></div>' +
+      '<div class="rule-row"><label>亲子特权解锁积分</label><input type="number" id="th_privilege" value="' + t.privilege + '"></div>';
+
     // 特权输入
-    document.getElementById('privilegeInput').value = appData.privilegeText;
+    const pi = document.getElementById('privilegeInput');
+    if (pi) pi.value = appData.privilegeText;
+
+    // 错题集（按孩子分类）
+    this.renderErrorCollection();
+  },
+  renderErrorCollection() {
+    const el = document.getElementById('errorCollection');
+    if (!el) return;
+    let html = '';
+    CONFIG.children.forEach(c => {
+      const ch = appData.children[c.id];
+      const total = ch.errorPool.chinese.length + ch.errorPool.english.length + ch.errorPool.math.length;
+      html += '<div style="margin-bottom:16px;border:1px solid var(--primary-light);border-radius:12px;padding:12px;">';
+      html += '<div style="font-size:var(--font-large);font-weight:bold;color:var(--primary);margin-bottom:8px;">👶 ' + ch.name + '（' + ch.grade + '）' + (total === 0 ? ' <span style="color:var(--success);">✅ 无错题</span>' : ' <span style="color:#FF6B6B;">共 ' + total + ' 题</span>') + '</div>';
+      if (ch.errorPool.chinese.length > 0) {
+        html += '<div style="margin-bottom:6px;"><strong>📚 语文：</strong>' + ch.errorPool.chinese.map(p => '<span class="error-chip">' + (p.item.length > 12 ? p.item.slice(0,12)+'...' : p.item) + ' (' + p.correctCount + '/2)</span>').join(' ') + '</div>';
+      }
+      if (ch.errorPool.english.length > 0) {
+        html += '<div style="margin-bottom:6px;"><strong>🌍 英语：</strong>' + ch.errorPool.english.map(p => '<span class="error-chip">' + (p.item.length > 12 ? p.item.slice(0,12)+'...' : p.item) + ' (' + p.correctCount + '/2)</span>').join(' ') + '</div>';
+      }
+      if (ch.errorPool.math.length > 0) {
+        html += '<div><strong>🧮 思维：</strong>' + ch.errorPool.math.map(p => '<span class="error-chip">' + (p.item.length > 12 ? p.item.slice(0,12)+'...' : p.item) + ' (' + p.correctCount + '/2)</span>').join(' ') + '</div>';
+      }
+      html += '</div>';
+    });
+    el.innerHTML = html;
   },
   saveRules() {
     appData.rules.taskComplete = parseInt(document.getElementById('rule_task').value) || 5;
     appData.rules.speakUp = parseInt(document.getElementById('rule_speak').value) || 3;
     appData.rules.selfCorrect = parseInt(document.getElementById('rule_correct').value) || 2;
     appData.rules.streakMax = parseInt(document.getElementById('rule_streak').value) || 7;
+    CONFIG.rewardThresholds.sticker = parseInt(document.getElementById('th_sticker').value) || 20;
+    CONFIG.rewardThresholds.theater = parseInt(document.getElementById('th_theater').value) || 50;
+    CONFIG.rewardThresholds.privilege = parseInt(document.getElementById('th_privilege').value) || 100;
+    appData.rewardThresholds = Object.assign({}, CONFIG.rewardThresholds);
     DB.save(appData);
-    alert('规则已保存！💕');
+    alert('设置已保存！💕');
+    this.renderReward();
   },
   savePrivilege() {
     appData.privilegeText = document.getElementById('privilegeInput').value || '和爸爸妈妈一起看一部电影';
@@ -1762,6 +1982,37 @@ const App = {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = child.name + '_错题_' + today + '.txt';
+    a.click();
+  },
+  exportAllErrors() {
+    let txt = '===== 萌可学习岛 全部错题集 =====\n';
+    txt += '导出时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+    CONFIG.children.forEach(c => {
+      const ch = appData.children[c.id];
+      txt += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      txt += '👶 ' + ch.name + '（' + ch.grade + '）\n';
+      txt += '总积分：' + ch.totalPoints + ' | 连续打卡：' + ch.streak + ' 天\n';
+      txt += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      if (ch.errorPool.chinese.length > 0) {
+        txt += '【语文 - 错别字/阅读】\n';
+        ch.errorPool.chinese.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      }
+      if (ch.errorPool.english.length > 0) {
+        txt += '【英语 - 复习池】\n';
+        ch.errorPool.english.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      }
+      if (ch.errorPool.math.length > 0) {
+        txt += '【思维 - 错题重练】\n';
+        ch.errorPool.math.forEach(p => txt += '  - ' + p.item + ' (连续对 ' + p.correctCount + '/2 次)\n');
+      }
+      const total = ch.errorPool.chinese.length + ch.errorPool.english.length + ch.errorPool.math.length;
+      if (total === 0) txt += '✅ 太棒了！没有错题！\n';
+      txt += '\n';
+    });
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '全部错题集_' + today + '.txt';
     a.click();
   },
 
